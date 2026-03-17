@@ -43,6 +43,13 @@ class EditorController {
     );
   }
 
+  void setShowByCondition(String? value) {
+    final v = value?.trim();
+    questionnaire.value = questionnaire.value.copyWith(
+      showByCondition: (v == null || v.isEmpty) ? null : v,
+    );
+  }
+
   void setBackgroundImageUrl(String? value) {
     final v = value?.trim();
     questionnaire.value = questionnaire.value.copyWith(

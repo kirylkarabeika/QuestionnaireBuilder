@@ -36,6 +36,7 @@ class _EditorScreenState extends State<EditorScreen> {
   final descCtrl = TextEditingController();
   final bgUrlCtrl = TextEditingController();
   final dateLabelCtrl = TextEditingController();
+  final showByConditionCtrl = TextEditingController();
   final sortOrderCtrl = TextEditingController();
 
   @override
@@ -45,6 +46,7 @@ class _EditorScreenState extends State<EditorScreen> {
     descCtrl.dispose();
     bgUrlCtrl.dispose();
     dateLabelCtrl.dispose();
+    showByConditionCtrl.dispose();
     sortOrderCtrl.dispose();
     super.dispose();
   }
@@ -65,6 +67,9 @@ class _EditorScreenState extends State<EditorScreen> {
         );
         dateLabelCtrl.value = dateLabelCtrl.value.copyWith(
           text: qn.dateLabel ?? '',
+        );
+        showByConditionCtrl.value = showByConditionCtrl.value.copyWith(
+          text: qn.showByCondition ?? '',
         );
         final desired = qn.sortOrder.toString();
         if (sortOrderCtrl.text != desired) {
@@ -165,6 +170,16 @@ class _EditorScreenState extends State<EditorScreen> {
                           hintText: 'e.g. Jan 2026',
                         ),
                         onChanged: (v) => controller.setDateLabel(v),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: showByConditionCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Show by condition (optional)',
+                          border: OutlineInputBorder(),
+                          hintText: 'e.g. challenge_completed',
+                        ),
+                        onChanged: (v) => controller.setShowByCondition(v),
                       ),
                       const SizedBox(height: 12),
                       TextField(

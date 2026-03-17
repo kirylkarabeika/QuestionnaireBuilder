@@ -18,6 +18,7 @@ _Questionnaire _$QuestionnaireFromJson(Map<String, dynamic> json) =>
       isComingSoon: json['isComingSoon'] as bool? ?? false,
       activeFrom: _dateFromJson(json['activeFrom']),
       activeTo: _dateFromJson(json['activeTo']),
+      showByCondition: json['showByCondition'] as String?,
       questions:
           (json['questions'] as List<dynamic>?)
               ?.map((e) => Question.fromJson(e as Map<String, dynamic>))
@@ -37,6 +38,7 @@ Map<String, dynamic> _$QuestionnaireToJson(_Questionnaire instance) =>
       'isComingSoon': instance.isComingSoon,
       'activeFrom': _dateToJson(instance.activeFrom),
       'activeTo': _dateToJson(instance.activeTo),
+      'showByCondition': instance.showByCondition,
       'questions': instance.questions,
     };
 

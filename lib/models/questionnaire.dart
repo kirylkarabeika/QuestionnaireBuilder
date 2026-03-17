@@ -21,6 +21,7 @@ abstract class Questionnaire with _$Questionnaire {
     @Default(false) bool isComingSoon,
     @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeFrom,
     @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo,
+    String? showByCondition,
     @Default(<Question>[]) List<Question> questions,
   }) = _Questionnaire;
 
