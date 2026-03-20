@@ -108,13 +108,14 @@ class _EditorScreenState extends State<EditorScreen> {
             ],
           ),
           body: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
               children: [
                 // Left: questionnaire metadata
                 SizedBox(
                   width: 420,
                   child: ListView(
+                    padding: const EdgeInsets.only(bottom: 16),
                     children: [
                       Text(
                         'Metadata',
@@ -151,9 +152,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                       const SizedBox(height: 12),
                       TextField(
-                        controller: TextEditingController(
-                          text: qn.backgroundImageUrl ?? '',
-                        ),
+                        controller: bgUrlCtrl,
                         decoration: const InputDecoration(
                           labelText: 'Background image URL (optional)',
                           border: OutlineInputBorder(),
