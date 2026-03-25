@@ -628,7 +628,7 @@ as List<Option>,
 /// @nodoc
 mixin _$Option {
 
- String get id; int get order; String get text;
+ String get id; int get order; String get text; String? get description; String? get imageUrl;
 /// Create a copy of Option
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -641,16 +641,16 @@ $OptionCopyWith<Option> get copyWith => _$OptionCopyWithImpl<Option>(this as Opt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Option&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Option&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.text, text) || other.text == text)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,order,text);
+int get hashCode => Object.hash(runtimeType,id,order,text,description,imageUrl);
 
 @override
 String toString() {
-  return 'Option(id: $id, order: $order, text: $text)';
+  return 'Option(id: $id, order: $order, text: $text, description: $description, imageUrl: $imageUrl)';
 }
 
 
@@ -661,7 +661,7 @@ abstract mixin class $OptionCopyWith<$Res>  {
   factory $OptionCopyWith(Option value, $Res Function(Option) _then) = _$OptionCopyWithImpl;
 @useResult
 $Res call({
- String id, int order, String text
+ String id, int order, String text, String? description, String? imageUrl
 });
 
 
@@ -678,12 +678,14 @@ class _$OptionCopyWithImpl<$Res>
 
 /// Create a copy of Option
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? text = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? text = null,Object? description = freezed,Object? imageUrl = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
 as int,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -768,10 +770,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String text)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String text,  String? description,  String? imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Option() when $default != null:
-return $default(_that.id,_that.order,_that.text);case _:
+return $default(_that.id,_that.order,_that.text,_that.description,_that.imageUrl);case _:
   return orElse();
 
 }
@@ -789,10 +791,10 @@ return $default(_that.id,_that.order,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String text)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String text,  String? description,  String? imageUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Option():
-return $default(_that.id,_that.order,_that.text);case _:
+return $default(_that.id,_that.order,_that.text,_that.description,_that.imageUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -809,10 +811,10 @@ return $default(_that.id,_that.order,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String text)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String text,  String? description,  String? imageUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Option() when $default != null:
-return $default(_that.id,_that.order,_that.text);case _:
+return $default(_that.id,_that.order,_that.text,_that.description,_that.imageUrl);case _:
   return null;
 
 }
@@ -824,12 +826,14 @@ return $default(_that.id,_that.order,_that.text);case _:
 @JsonSerializable()
 
 class _Option implements Option {
-  const _Option({required this.id, this.order = 0, required this.text});
+  const _Option({required this.id, this.order = 0, required this.text, this.description, this.imageUrl});
   factory _Option.fromJson(Map<String, dynamic> json) => _$OptionFromJson(json);
 
 @override final  String id;
 @override@JsonKey() final  int order;
 @override final  String text;
+@override final  String? description;
+@override final  String? imageUrl;
 
 /// Create a copy of Option
 /// with the given fields replaced by the non-null parameter values.
@@ -844,16 +848,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Option&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Option&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.text, text) || other.text == text)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,order,text);
+int get hashCode => Object.hash(runtimeType,id,order,text,description,imageUrl);
 
 @override
 String toString() {
-  return 'Option(id: $id, order: $order, text: $text)';
+  return 'Option(id: $id, order: $order, text: $text, description: $description, imageUrl: $imageUrl)';
 }
 
 
@@ -864,7 +868,7 @@ abstract mixin class _$OptionCopyWith<$Res> implements $OptionCopyWith<$Res> {
   factory _$OptionCopyWith(_Option value, $Res Function(_Option) _then) = __$OptionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int order, String text
+ String id, int order, String text, String? description, String? imageUrl
 });
 
 
@@ -881,12 +885,14 @@ class __$OptionCopyWithImpl<$Res>
 
 /// Create a copy of Option
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? text = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? text = null,Object? description = freezed,Object? imageUrl = freezed,}) {
   return _then(_Option(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
 as int,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

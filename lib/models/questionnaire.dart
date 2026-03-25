@@ -51,6 +51,8 @@ abstract class Option with _$Option {
     required String id,
     @Default(0) int order,
     required String text,
+    String? description,
+    String? imageUrl,
   }) = _Option;
 
   factory Option.fromJson(Map<String, dynamic> json) => _$OptionFromJson(json);
@@ -63,6 +65,8 @@ enum QuestionType {
   multiSelect,
   @JsonValue('text_input')
   textInput,
+  @JsonValue('prominent_single_select')
+  prominentSingleSelect,
 }
 
 @freezed

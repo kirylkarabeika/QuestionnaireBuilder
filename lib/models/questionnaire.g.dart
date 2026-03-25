@@ -72,18 +72,23 @@ const _$QuestionTypeEnumMap = {
   QuestionType.singleSelect: 'single_select',
   QuestionType.multiSelect: 'multi_select',
   QuestionType.textInput: 'text_input',
+  QuestionType.prominentSingleSelect: 'prominent_single_select',
 };
 
 _Option _$OptionFromJson(Map<String, dynamic> json) => _Option(
   id: json['id'] as String,
   order: (json['order'] as num?)?.toInt() ?? 0,
   text: json['text'] as String,
+  description: json['description'] as String?,
+  imageUrl: json['imageUrl'] as String?,
 );
 
 Map<String, dynamic> _$OptionToJson(_Option instance) => <String, dynamic>{
   'id': instance.id,
   'order': instance.order,
   'text': instance.text,
+  'description': instance.description,
+  'imageUrl': instance.imageUrl,
 };
 
 _PreScreen _$PreScreenFromJson(Map<String, dynamic> json) => _PreScreen(

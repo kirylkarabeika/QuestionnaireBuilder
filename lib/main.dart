@@ -273,6 +273,12 @@ class _EditorScreenState extends State<EditorScreen> {
                                 controller.addQuestion(QuestionType.textInput),
                             child: const Text('Text input'),
                           ),
+                          ElevatedButton(
+                            onPressed: () => controller.addQuestion(
+                              QuestionType.prominentSingleSelect,
+                            ),
+                            child: const Text('Prominent single select'),
+                          ),
                         ],
                       ),
                     ],
@@ -454,7 +460,14 @@ class _QuestionCardState extends State<QuestionCard> {
           value: question.isSkippable,
           onChanged: (v) => widget.onChanged(question.copyWith(isSkippable: v)),
         ),
-        if (question.type != QuestionType.textInput) ...[
+        if (question.type == QuestionType.prominentSingleSelect) ...[
+          const SizedBox(height: 8),
+          ProminentOptionEditor(
+            options: question.options,
+            onChanged: (opts) =>
+                widget.onChanged(question.copyWith(options: opts)),
+          ),
+        ] else if (question.type != QuestionType.textInput) ...[
           const SizedBox(height: 8),
           OptionEditor(
             options: question.options,
@@ -462,6 +475,189 @@ class _QuestionCardState extends State<QuestionCard> {
                 widget.onChanged(question.copyWith(options: opts)),
           ),
         ],
+      ],
+    );
+  }
+}
+
+// ── Prominent option editor (title + description + imageUrl per option) ──
+
+class ProminentOptionEditor extends StatefulWidget {
+  const ProminentOptionEditor({
+    super.key,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final List<Option> options;
+  final ValueChanged<List<Option>> onChanged;
+
+  @override
+  State<ProminentOptionEditor> createState() => _ProminentOptionEditorState();
+}
+
+class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
+  final Map<String, TextEditingController> _textCtrls = {};
+  final Map<String, TextEditingController> _descCtrls = {};
+  final Map<String, TextEditingController> _imgCtrls = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _syncControllers();
+  }
+
+  @override
+  void didUpdateWidget(covariant ProminentOptionEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncControllers();
+  }
+
+  void _syncCtrl(
+      Map<String, TextEditingController> map, String id, String value) {
+    final c = map.putIfAbsent(id, () => TextEditingController());
+    if (c.text != value) {
+      c.value = c.value.copyWith(
+        text: value,
+        selection: TextSelection.collapsed(offset: value.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
+  void _syncControllers() {
+    for (final opt in widget.options) {
+      _syncCtrl(_textCtrls, opt.id, opt.text);
+      _syncCtrl(_descCtrls, opt.id, opt.description ?? '');
+      _syncCtrl(_imgCtrls, opt.id, opt.imageUrl ?? '');
+    }
+    final ids = widget.options.map((o) => o.id).toSet();
+    for (final map in [_textCtrls, _descCtrls, _imgCtrls]) {
+      final removed = map.keys.where((id) => !ids.contains(id)).toList();
+      for (final id in removed) {
+        map[id]?.dispose();
+        map.remove(id);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final map in [_textCtrls, _descCtrls, _imgCtrls]) {
+      for (final c in map.values) {
+        c.dispose();
+      }
+      map.clear();
+    }
+    super.dispose();
+  }
+
+  Option _updateOpt(String id,
+      {String? text, String? description, String? imageUrl}) {
+    final opt = widget.options.firstWhere((o) => o.id == id);
+    String? optStr(String? v) => (v != null && v.trim().isEmpty) ? null : v;
+    return opt.copyWith(
+      text: text ?? opt.text,
+      description: optStr(description ?? opt.description),
+      imageUrl: optStr(imageUrl ?? opt.imageUrl),
+    );
+  }
+
+  void _emitUpdate(String id,
+      {String? text, String? description, String? imageUrl}) {
+    final updated = widget.options
+        .map((o) => o.id == id
+            ? _updateOpt(id,
+                text: text, description: description, imageUrl: imageUrl)
+            : o)
+        .toList();
+    widget.onChanged(updated);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Options', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        for (final opt in widget.options)
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          key: ValueKey('${opt.id}_text'),
+                          controller: _textCtrls[opt.id],
+                          decoration: const InputDecoration(
+                            labelText: 'Title',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (v) => _emitUpdate(opt.id, text: v),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          final updated = widget.options
+                              .where((o) => o.id != opt.id)
+                              .toList();
+                          final renumbered = [
+                            for (int i = 0; i < updated.length; i++)
+                              updated[i].copyWith(order: i),
+                          ];
+                          widget.onChanged(renumbered);
+                        },
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    key: ValueKey('${opt.id}_desc'),
+                    controller: _descCtrls[opt.id],
+                    maxLines: 2,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (v) => _emitUpdate(opt.id, description: v),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    key: ValueKey('${opt.id}_img'),
+                    controller: _imgCtrls[opt.id],
+                    decoration: const InputDecoration(
+                      labelText: 'Image URL',
+                      border: OutlineInputBorder(),
+                      hintText: 'https://…',
+                    ),
+                    onChanged: (v) => _emitUpdate(opt.id, imageUrl: v),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: () {
+              final id = DateTime.now().microsecondsSinceEpoch.toString();
+              final newOpt = Option(
+                id: id,
+                order: widget.options.length,
+                text: '',
+              );
+              widget.onChanged([...widget.options, newOpt]);
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Add option'),
+          ),
+        ),
       ],
     );
   }
