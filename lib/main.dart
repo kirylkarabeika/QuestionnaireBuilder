@@ -297,6 +297,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       const SizedBox(height: 16),
                       Expanded(
                         child: ReorderableListView.builder(
+                          buildDefaultDragHandles: false,
                           itemCount: qn.questions.length,
                           onReorder: controller.reorderQuestion,
                           itemBuilder: (context, index) {
@@ -316,6 +317,7 @@ class _EditorScreenState extends State<EditorScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: QuestionCard(
+                                  index: index,
                                   question: question,
                                   onChanged: (updated) => controller
                                       .updateQuestion(question.id, updated),
@@ -386,11 +388,13 @@ class _EditorScreenState extends State<EditorScreen> {
 class QuestionCard extends StatefulWidget {
   const QuestionCard({
     super.key,
+    required this.index,
     required this.question,
     required this.onChanged,
     required this.onDelete,
   });
 
+  final int index;
   final Question question;
   final ValueChanged<Question> onChanged;
   final VoidCallback onDelete;
@@ -451,7 +455,13 @@ class _QuestionCardState extends State<QuestionCard> {
               onPressed: widget.onDelete,
               icon: const Icon(Icons.delete),
             ),
-            const Icon(Icons.drag_handle),
+            ReorderableDragStartListener(
+              index: widget.index,
+              child: const MouseRegion(
+                cursor: SystemMouseCursors.grab,
+                child: Icon(Icons.drag_handle),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
