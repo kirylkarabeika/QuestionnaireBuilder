@@ -38,6 +38,8 @@ class _EditorScreenState extends State<EditorScreen> {
   final dateLabelCtrl = TextEditingController();
   final showByConditionCtrl = TextEditingController();
   final sortOrderCtrl = TextEditingController();
+  final preScreenTitleCtrl = TextEditingController();
+  final preScreenDescCtrl = TextEditingController();
 
   @override
   void dispose() {
@@ -48,6 +50,8 @@ class _EditorScreenState extends State<EditorScreen> {
     dateLabelCtrl.dispose();
     showByConditionCtrl.dispose();
     sortOrderCtrl.dispose();
+    preScreenTitleCtrl.dispose();
+    preScreenDescCtrl.dispose();
     super.dispose();
   }
 
@@ -74,6 +78,16 @@ class _EditorScreenState extends State<EditorScreen> {
         final desired = qn.sortOrder.toString();
         if (sortOrderCtrl.text != desired) {
           sortOrderCtrl.text = desired;
+        }
+        final psTitle = qn.preScreen?.title ?? '';
+        if (preScreenTitleCtrl.text != psTitle) {
+          preScreenTitleCtrl.value =
+              preScreenTitleCtrl.value.copyWith(text: psTitle);
+        }
+        final psDesc = qn.preScreen?.description ?? '';
+        if (preScreenDescCtrl.text != psDesc) {
+          preScreenDescCtrl.value =
+              preScreenDescCtrl.value.copyWith(text: psDesc);
         }
 
         return Scaffold(
@@ -225,6 +239,14 @@ class _EditorScreenState extends State<EditorScreen> {
                                 .copyWith(isComingSoon: v),
                       ),
                       const Divider(height: 32),
+                      // ── Pre-screen ────────────────────────────
+                      SwitchListTile(
+                        title: const Text('Has pre-screen'),
+                        value: qn.preScreen != null,
+                        onChanged: controller.enablePreScreen,
+                      ),
+                      if (qn.preScreen != null) ..._buildPreScreenFields(qn),
+                      const Divider(height: 32),
                       Text(
                         'Add Question',
                         style: Theme.of(context).textTheme.titleMedium,
@@ -298,6 +320,50 @@ class _EditorScreenState extends State<EditorScreen> {
         );
       },
     );
+  }
+
+  List<Widget> _buildPreScreenFields(Questionnaire qn) {
+    final ps = qn.preScreen!;
+    return [
+      const SizedBox(height: 12),
+      TextField(
+        decoration: const InputDecoration(
+          labelText: 'Pre-screen title',
+          border: OutlineInputBorder(),
+        ),
+        controller: preScreenTitleCtrl,
+        onChanged: controller.setPreScreenTitle,
+      ),
+      const SizedBox(height: 12),
+      TextField(
+        decoration: const InputDecoration(
+          labelText: 'Pre-screen description',
+          border: OutlineInputBorder(),
+        ),
+        maxLines: 3,
+        controller: preScreenDescCtrl,
+        onChanged: controller.setPreScreenDescription,
+      ),
+      const SizedBox(height: 12),
+      Text('Cards', style: Theme.of(context).textTheme.titleSmall),
+      for (int i = 0; i < ps.cards.length; i++)
+        PreScreenCardEditor(
+          key: ValueKey('ps_card_$i'),
+          card: ps.cards[i],
+          index: i,
+          onChanged: (c) => controller.updatePreScreenCard(i, c),
+          onDelete: () => controller.removePreScreenCard(i),
+        ),
+      const SizedBox(height: 8),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: OutlinedButton.icon(
+          onPressed: controller.addPreScreenCard,
+          icon: const Icon(Icons.add),
+          label: const Text('Add card'),
+        ),
+      ),
+    ];
   }
 }
 
@@ -528,6 +594,163 @@ class _OptionEditorState extends State<OptionEditor> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class PreScreenCardEditor extends StatefulWidget {
+  const PreScreenCardEditor({
+    super.key,
+    required this.card,
+    required this.index,
+    required this.onChanged,
+    required this.onDelete,
+  });
+
+  final PreScreenCard card;
+  final int index;
+  final ValueChanged<PreScreenCard> onChanged;
+  final VoidCallback onDelete;
+
+  @override
+  State<PreScreenCardEditor> createState() => _PreScreenCardEditorState();
+}
+
+class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
+  late final TextEditingController _titleCtrl;
+  late final TextEditingController _descCtrl;
+  late final TextEditingController _imageUrlCtrl;
+  late final TextEditingController _btnTitleCtrl;
+  late final TextEditingController _btnUrlCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleCtrl = TextEditingController(text: widget.card.title);
+    _descCtrl = TextEditingController(text: widget.card.description);
+    _imageUrlCtrl = TextEditingController(text: widget.card.imageUrl ?? '');
+    _btnTitleCtrl = TextEditingController(text: widget.card.buttonTitle ?? '');
+    _btnUrlCtrl = TextEditingController(text: widget.card.buttonUrl ?? '');
+  }
+
+  @override
+  void didUpdateWidget(covariant PreScreenCardEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncIfNeeded(_titleCtrl, widget.card.title);
+    _syncIfNeeded(_descCtrl, widget.card.description);
+    _syncIfNeeded(_imageUrlCtrl, widget.card.imageUrl ?? '');
+    _syncIfNeeded(_btnTitleCtrl, widget.card.buttonTitle ?? '');
+    _syncIfNeeded(_btnUrlCtrl, widget.card.buttonUrl ?? '');
+  }
+
+  void _syncIfNeeded(TextEditingController ctrl, String desired) {
+    if (ctrl.text != desired) {
+      ctrl.value = ctrl.value.copyWith(
+        text: desired,
+        selection: TextSelection.collapsed(offset: desired.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _imageUrlCtrl.dispose();
+    _btnTitleCtrl.dispose();
+    _btnUrlCtrl.dispose();
+    super.dispose();
+  }
+
+  PreScreenCard _updated({
+    String? title,
+    String? description,
+    String? imageUrl,
+    String? buttonTitle,
+    String? buttonUrl,
+  }) {
+    String? opt(String? v) => (v == null || v.trim().isEmpty) ? null : v;
+    return widget.card.copyWith(
+      title: title ?? widget.card.title,
+      description: description ?? widget.card.description,
+      imageUrl: opt(imageUrl ?? widget.card.imageUrl),
+      buttonTitle: opt(buttonTitle ?? widget.card.buttonTitle),
+      buttonUrl: opt(buttonUrl ?? widget.card.buttonUrl),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Card ${widget.index + 1}',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: widget.onDelete,
+                  icon: const Icon(Icons.delete, size: 20),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _titleCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Title',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) => widget.onChanged(_updated(title: v)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _descCtrl,
+              maxLines: 2,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) => widget.onChanged(_updated(description: v)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _imageUrlCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Image URL (optional)',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) => widget.onChanged(_updated(imageUrl: v)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _btnTitleCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Button title (optional)',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) => widget.onChanged(_updated(buttonTitle: v)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _btnUrlCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Button URL (optional)',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) => widget.onChanged(_updated(buttonUrl: v)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

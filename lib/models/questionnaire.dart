@@ -23,6 +23,7 @@ abstract class Questionnaire with _$Questionnaire {
     @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo,
     String? showByCondition,
     @Default(<Question>[]) List<Question> questions,
+    PreScreen? preScreen,
   }) = _Questionnaire;
 
   factory Questionnaire.fromJson(Map<String, dynamic> json) =>
@@ -62,4 +63,30 @@ enum QuestionType {
   multiSelect,
   @JsonValue('text_input')
   textInput,
+}
+
+@freezed
+abstract class PreScreen with _$PreScreen {
+  const factory PreScreen({
+    required String title,
+    required String description,
+    @Default(<PreScreenCard>[]) List<PreScreenCard> cards,
+  }) = _PreScreen;
+
+  factory PreScreen.fromJson(Map<String, dynamic> json) =>
+      _$PreScreenFromJson(json);
+}
+
+@freezed
+abstract class PreScreenCard with _$PreScreenCard {
+  const factory PreScreenCard({
+    required String title,
+    String? imageUrl,
+    required String description,
+    String? buttonTitle,
+    String? buttonUrl,
+  }) = _PreScreenCard;
+
+  factory PreScreenCard.fromJson(Map<String, dynamic> json) =>
+      _$PreScreenCardFromJson(json);
 }

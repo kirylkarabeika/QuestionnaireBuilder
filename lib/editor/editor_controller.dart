@@ -131,6 +131,63 @@ class EditorController {
     return [for (int i = 0; i < qs.length; i++) qs[i].copyWith(order: i)];
   }
 
+  // ── Pre-screen ──────────────────────────────────────────────
+
+  void setPreScreen(PreScreen? preScreen) {
+    questionnaire.value = questionnaire.value.copyWith(preScreen: preScreen);
+  }
+
+  void enablePreScreen(bool enabled) {
+    if (enabled) {
+      questionnaire.value = questionnaire.value.copyWith(
+        preScreen: questionnaire.value.preScreen ??
+            const PreScreen(title: '', description: ''),
+      );
+    } else {
+      questionnaire.value = questionnaire.value.copyWith(preScreen: null);
+    }
+  }
+
+  void setPreScreenTitle(String title) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    questionnaire.value =
+        questionnaire.value.copyWith(preScreen: ps.copyWith(title: title));
+  }
+
+  void setPreScreenDescription(String desc) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    questionnaire.value =
+        questionnaire.value.copyWith(preScreen: ps.copyWith(description: desc));
+  }
+
+  void addPreScreenCard() {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    final card = const PreScreenCard(title: '', description: '');
+    questionnaire.value = questionnaire.value.copyWith(
+      preScreen: ps.copyWith(cards: [...ps.cards, card]),
+    );
+  }
+
+  void updatePreScreenCard(int index, PreScreenCard card) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    final cards = [...ps.cards];
+    cards[index] = card;
+    questionnaire.value =
+        questionnaire.value.copyWith(preScreen: ps.copyWith(cards: cards));
+  }
+
+  void removePreScreenCard(int index) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    final cards = [...ps.cards]..removeAt(index);
+    questionnaire.value =
+        questionnaire.value.copyWith(preScreen: ps.copyWith(cards: cards));
+  }
+
   String exportJsonPretty() {
     final map = questionnaire.value.toJson();
     return const JsonEncoder.withIndent('  ').convert(map);
