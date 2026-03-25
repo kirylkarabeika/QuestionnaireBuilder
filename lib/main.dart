@@ -122,20 +122,20 @@ class _EditorScreenState extends State<EditorScreen> {
             ],
           ),
           body: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
             child: Row(
               children: [
                 // Left: questionnaire metadata
                 SizedBox(
                   width: 420,
                   child: ListView(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: 24),
                     children: [
                       Text(
                         'Metadata',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: idCtrl,
                         decoration: const InputDecoration(
@@ -145,7 +145,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: controller.setId,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: titleCtrl,
                         decoration: const InputDecoration(
@@ -154,7 +154,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: controller.setTitle,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: descCtrl,
                         maxLines: 4,
@@ -164,7 +164,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: controller.setDescription,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: bgUrlCtrl,
                         decoration: const InputDecoration(
@@ -174,7 +174,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: (v) => controller.setBackgroundImageUrl(v),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: dateLabelCtrl,
                         decoration: const InputDecoration(
@@ -184,7 +184,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: (v) => controller.setDateLabel(v),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: showByConditionCtrl,
                         decoration: const InputDecoration(
@@ -194,7 +194,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: (v) => controller.setShowByCondition(v),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: sortOrderCtrl,
                         keyboardType: TextInputType.number,
@@ -205,21 +205,21 @@ class _EditorScreenState extends State<EditorScreen> {
                         ),
                         onChanged: controller.setSortOrderFromText,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       OptionalDateTimeField(
                         label: 'Active from',
                         value: qn.activeFrom,
                         includeTime: true,
                         onChanged: controller.setActiveFrom,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       OptionalDateTimeField(
                         label: 'Active to',
                         value: qn.activeTo,
                         includeTime: true,
                         onChanged: controller.setActiveTo,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       SwitchListTile(
                         title: const Text('isActive'),
                         value: qn.isActive,
@@ -238,7 +238,7 @@ class _EditorScreenState extends State<EditorScreen> {
                                 .value
                                 .copyWith(isComingSoon: v),
                       ),
-                      const Divider(height: 32),
+                      const Divider(height: 40),
                       // ── Pre-screen ────────────────────────────
                       SwitchListTile(
                         title: const Text('Has pre-screen'),
@@ -246,12 +246,12 @@ class _EditorScreenState extends State<EditorScreen> {
                         onChanged: controller.enablePreScreen,
                       ),
                       if (qn.preScreen != null) ..._buildPreScreenFields(qn),
-                      const Divider(height: 32),
+                      const Divider(height: 40),
                       Text(
                         'Add Question',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -284,7 +284,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 24),
                 // Right: questions list
                 Expanded(
                   child: Column(
@@ -294,7 +294,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         'Questions',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       Expanded(
                         child: ReorderableListView.builder(
                           itemCount: qn.questions.length,
@@ -303,8 +303,18 @@ class _EditorScreenState extends State<EditorScreen> {
                             final question = qn.questions[index];
                             return Card(
                               key: ValueKey(question.id),
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .outlineVariant,
+                                ),
+                              ),
+                              margin: const EdgeInsets.only(bottom: 12),
                               child: Padding(
-                                padding: const EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(16),
                                 child: QuestionCard(
                                   question: question,
                                   onChanged: (updated) => controller
@@ -331,7 +341,7 @@ class _EditorScreenState extends State<EditorScreen> {
   List<Widget> _buildPreScreenFields(Questionnaire qn) {
     final ps = qn.preScreen!;
     return [
-      const SizedBox(height: 12),
+      const SizedBox(height: 16),
       TextField(
         decoration: const InputDecoration(
           labelText: 'Pre-screen title',
@@ -340,7 +350,7 @@ class _EditorScreenState extends State<EditorScreen> {
         controller: preScreenTitleCtrl,
         onChanged: controller.setPreScreenTitle,
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: 16),
       TextField(
         decoration: const InputDecoration(
           labelText: 'Pre-screen description',
@@ -350,7 +360,7 @@ class _EditorScreenState extends State<EditorScreen> {
         controller: preScreenDescCtrl,
         onChanged: controller.setPreScreenDescription,
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: 16),
       Text('Cards', style: Theme.of(context).textTheme.titleSmall),
       for (int i = 0; i < ps.cards.length; i++)
         PreScreenCardEditor(
@@ -444,7 +454,7 @@ class _QuestionCardState extends State<QuestionCard> {
             const Icon(Icons.drag_handle),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextField(
           controller: _titleCtrl,
           decoration: const InputDecoration(
@@ -453,7 +463,7 @@ class _QuestionCardState extends State<QuestionCard> {
           ),
           onChanged: (v) => widget.onChanged(question.copyWith(title: v)),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('Skippable'),
@@ -461,14 +471,14 @@ class _QuestionCardState extends State<QuestionCard> {
           onChanged: (v) => widget.onChanged(question.copyWith(isSkippable: v)),
         ),
         if (question.type == QuestionType.prominentSingleSelect) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           ProminentOptionEditor(
             options: question.options,
             onChanged: (opts) =>
                 widget.onChanged(question.copyWith(options: opts)),
           ),
         ] else if (question.type != QuestionType.textInput) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           OptionEditor(
             options: question.options,
             onChanged: (opts) =>
@@ -580,12 +590,19 @@ class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Options', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         for (final opt in widget.options)
           Card(
-            margin: const EdgeInsets.only(bottom: 8),
+            elevation: 1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Row(
@@ -616,7 +633,7 @@ class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   TextField(
                     key: ValueKey('${opt.id}_desc'),
                     controller: _descCtrls[opt.id],
@@ -627,7 +644,7 @@ class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
                     ),
                     onChanged: (v) => _emitUpdate(opt.id, description: v),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   TextField(
                     key: ValueKey('${opt.id}_img'),
                     controller: _imgCtrls[opt.id],
@@ -732,11 +749,11 @@ class _OptionEditorState extends State<OptionEditor> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Options', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
 
         for (final opt in widget.options)
           Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(bottom: 12),
             child: Row(
               children: [
                 Expanded(
@@ -879,9 +896,16 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+      ),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -898,7 +922,7 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextField(
               controller: _titleCtrl,
               decoration: const InputDecoration(
@@ -907,7 +931,7 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
               ),
               onChanged: (v) => widget.onChanged(_updated(title: v)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextField(
               controller: _descCtrl,
               maxLines: 2,
@@ -917,7 +941,7 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
               ),
               onChanged: (v) => widget.onChanged(_updated(description: v)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextField(
               controller: _imageUrlCtrl,
               decoration: const InputDecoration(
@@ -926,7 +950,7 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
               ),
               onChanged: (v) => widget.onChanged(_updated(imageUrl: v)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextField(
               controller: _btnTitleCtrl,
               decoration: const InputDecoration(
@@ -935,7 +959,7 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
               ),
               onChanged: (v) => widget.onChanged(_updated(buttonTitle: v)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextField(
               controller: _btnUrlCtrl,
               decoration: const InputDecoration(
