@@ -4,7 +4,7 @@ part 'questionnaire.freezed.dart';
 part 'questionnaire.g.dart';
 
 DateTime? _dateFromJson(Object? json) =>
-    json == null ? null : DateTime.parse(json as String);
+    json == null ? null : DateTime.parse(json as String).toLocal();
 
 String? _dateToJson(DateTime? date) => date?.toUtc().toIso8601String();
 
