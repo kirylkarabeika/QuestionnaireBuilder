@@ -36,7 +36,6 @@ class _EditorScreenState extends State<EditorScreen> {
   final descCtrl = TextEditingController();
   final bgUrlCtrl = TextEditingController();
   final dateLabelCtrl = TextEditingController();
-  final showByConditionCtrl = TextEditingController();
   final sortOrderCtrl = TextEditingController();
   final preScreenTitleCtrl = TextEditingController();
   final preScreenDescCtrl = TextEditingController();
@@ -48,7 +47,6 @@ class _EditorScreenState extends State<EditorScreen> {
     descCtrl.dispose();
     bgUrlCtrl.dispose();
     dateLabelCtrl.dispose();
-    showByConditionCtrl.dispose();
     sortOrderCtrl.dispose();
     preScreenTitleCtrl.dispose();
     preScreenDescCtrl.dispose();
@@ -71,9 +69,6 @@ class _EditorScreenState extends State<EditorScreen> {
         );
         dateLabelCtrl.value = dateLabelCtrl.value.copyWith(
           text: qn.dateLabel ?? '',
-        );
-        showByConditionCtrl.value = showByConditionCtrl.value.copyWith(
-          text: qn.showByCondition ?? '',
         );
         final desired = qn.sortOrder.toString();
         if (sortOrderCtrl.text != desired) {
@@ -185,13 +180,22 @@ class _EditorScreenState extends State<EditorScreen> {
                         onChanged: (v) => controller.setDateLabel(v),
                       ),
                       const SizedBox(height: 16),
-                      TextField(
-                        controller: showByConditionCtrl,
+                      DropdownButtonFormField<String?>(
+                        value: qn.showByCondition,
                         decoration: const InputDecoration(
-                          labelText: 'Show by condition (optional)',
+                          labelText: 'Show by condition',
                           border: OutlineInputBorder(),
-                          hintText: 'e.g. challenge_completed',
                         ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text('None'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'try_new_features',
+                            child: Text('Try new features section'),
+                          ),
+                        ],
                         onChanged: (v) => controller.setShowByCondition(v),
                       ),
                       const SizedBox(height: 16),
