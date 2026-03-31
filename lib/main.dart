@@ -183,7 +183,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String?>(
-                        value: qn.showByCondition,
+                        initialValue: qn.showByCondition,
                         decoration: const InputDecoration(
                           labelText: 'Show by condition',
                           border: OutlineInputBorder(),
