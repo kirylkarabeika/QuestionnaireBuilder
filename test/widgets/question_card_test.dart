@@ -55,6 +55,7 @@ void main() {
     title: 'Test Q',
     type: type,
     options: const [],
+    isSkippable: false,
   );
 
   Widget buildCard({
