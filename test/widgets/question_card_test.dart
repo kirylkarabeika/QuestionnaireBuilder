@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/main.dart';
-import '../../lib/models/questionnaire.dart';
+import 'package:labs_questionnaire_creator/main.dart';
+import 'package:labs_questionnaire_creator/models/questionnaire.dart';
 
 class _QuestionCardHarness extends StatefulWidget {
   const _QuestionCardHarness({
