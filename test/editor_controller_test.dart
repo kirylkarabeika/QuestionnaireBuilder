@@ -134,8 +134,10 @@ void main() {
   group('setBackgroundImageUrl', () {
     test('sets a valid URL', () {
       controller.setBackgroundImageUrl('https://example.com/img.png');
-      expect(controller.questionnaire.value.backgroundImageUrl,
-          'https://example.com/img.png');
+      expect(
+        controller.questionnaire.value.backgroundImageUrl,
+        'https://example.com/img.png',
+      );
     });
 
     test('sets null for empty string', () {
@@ -244,8 +246,10 @@ void main() {
     test('adds a question with the correct type', () {
       controller.addQuestion(QuestionType.textInput);
       expect(controller.questionnaire.value.questions.length, 1);
-      expect(controller.questionnaire.value.questions.first.type,
-          QuestionType.textInput);
+      expect(
+        controller.questionnaire.value.questions.first.type,
+        QuestionType.textInput,
+      );
     });
 
     test('assigns order sequentially', () {
@@ -408,8 +412,10 @@ void main() {
     test('updates the preScreen description', () {
       controller.enablePreScreen(true);
       controller.setPreScreenDescription('Please read carefully');
-      expect(controller.questionnaire.value.preScreen!.description,
-          'Please read carefully');
+      expect(
+        controller.questionnaire.value.preScreen!.description,
+        'Please read carefully',
+      );
     });
 
     test('does nothing when preScreen is null', () {
@@ -450,13 +456,17 @@ void main() {
 
       controller.updatePreScreenCard(0, updated);
 
-      expect(controller.questionnaire.value.preScreen!.cards.first.title,
-          'Card Title');
+      expect(
+        controller.questionnaire.value.preScreen!.cards.first.title,
+        'Card Title',
+      );
     });
 
     test('does nothing when preScreen is null', () {
       controller.updatePreScreenCard(
-          0, const PreScreenCard(title: '', description: ''));
+        0,
+        const PreScreenCard(title: '', description: ''),
+      );
       expect(controller.questionnaire.value.preScreen, isNull);
     });
   });

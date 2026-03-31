@@ -76,13 +76,15 @@ class _EditorScreenState extends State<EditorScreen> {
         }
         final psTitle = qn.preScreen?.title ?? '';
         if (preScreenTitleCtrl.text != psTitle) {
-          preScreenTitleCtrl.value =
-              preScreenTitleCtrl.value.copyWith(text: psTitle);
+          preScreenTitleCtrl.value = preScreenTitleCtrl.value.copyWith(
+            text: psTitle,
+          );
         }
         final psDesc = qn.preScreen?.description ?? '';
         if (preScreenDescCtrl.text != psDesc) {
-          preScreenDescCtrl.value =
-              preScreenDescCtrl.value.copyWith(text: psDesc);
+          preScreenDescCtrl.value = preScreenDescCtrl.value.copyWith(
+            text: psDesc,
+          );
         }
 
         return Scaffold(
@@ -187,10 +189,7 @@ class _EditorScreenState extends State<EditorScreen> {
                           border: OutlineInputBorder(),
                         ),
                         items: const [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text('None'),
-                          ),
+                          DropdownMenuItem(value: null, child: Text('None')),
                           DropdownMenuItem(
                             value: 'try_new_features',
                             child: Text('Try new features section'),
@@ -312,9 +311,9 @@ class _EditorScreenState extends State<EditorScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: BorderSide(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .outlineVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.outlineVariant,
                                 ),
                               ),
                               margin: const EdgeInsets.only(bottom: 12),
@@ -538,7 +537,10 @@ class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
   }
 
   void _syncCtrl(
-      Map<String, TextEditingController> map, String id, String value) {
+    Map<String, TextEditingController> map,
+    String id,
+    String value,
+  ) {
     final c = map.putIfAbsent(id, () => TextEditingController());
     if (c.text != value) {
       c.value = c.value.copyWith(
@@ -576,8 +578,12 @@ class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
     super.dispose();
   }
 
-  Option _updateOpt(String id,
-      {String? text, String? description, String? imageUrl}) {
+  Option _updateOpt(
+    String id, {
+    String? text,
+    String? description,
+    String? imageUrl,
+  }) {
     final opt = widget.options.firstWhere((o) => o.id == id);
     String? optStr(String? v) => (v != null && v.trim().isEmpty) ? null : v;
     return opt.copyWith(
@@ -587,13 +593,23 @@ class _ProminentOptionEditorState extends State<ProminentOptionEditor> {
     );
   }
 
-  void _emitUpdate(String id,
-      {String? text, String? description, String? imageUrl}) {
+  void _emitUpdate(
+    String id, {
+    String? text,
+    String? description,
+    String? imageUrl,
+  }) {
     final updated = widget.options
-        .map((o) => o.id == id
-            ? _updateOpt(id,
-                text: text, description: description, imageUrl: imageUrl)
-            : o)
+        .map(
+          (o) => o.id == id
+              ? _updateOpt(
+                  id,
+                  text: text,
+                  description: description,
+                  imageUrl: imageUrl,
+                )
+              : o,
+        )
         .toList();
     widget.onChanged(updated);
   }
@@ -913,9 +929,7 @@ class _PreScreenCardEditorState extends State<PreScreenCardEditor> {
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
