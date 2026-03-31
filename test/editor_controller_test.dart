@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/editor/editor_controller.dart';
-import '../lib/models/questionnaire.dart';
+import 'package:labs_questionnaire_creator/editor/editor_controller.dart';
+import 'package:labs_questionnaire_creator/models/questionnaire.dart';
 
 void main() {
   late EditorController controller;
