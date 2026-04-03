@@ -22,6 +22,7 @@ abstract class Questionnaire with _$Questionnaire {
     @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeFrom,
     @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo,
     String? showByCondition,
+    @Default(true) bool showNotSeenMarker,
     @Default(<Question>[]) List<Question> questions,
     PreScreen? preScreen,
   }) = _Questionnaire;

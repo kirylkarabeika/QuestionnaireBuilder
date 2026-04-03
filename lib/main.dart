@@ -241,6 +241,11 @@ class _EditorScreenState extends State<EditorScreen> {
                                 .value
                                 .copyWith(isComingSoon: v),
                       ),
+                      SwitchListTile(
+                        title: const Text('Show not seen marker'),
+                        value: qn.showNotSeenMarker,
+                        onChanged: controller.setShowNotSeenMarker,
+                      ),
                       const Divider(height: 40),
                       // ── Pre-screen ────────────────────────────
                       SwitchListTile(

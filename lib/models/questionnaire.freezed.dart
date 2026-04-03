@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Questionnaire {
 
- String get id; String get title; String get description; String? get dateLabel; String? get backgroundImageUrl; int get sortOrder; bool get isActive; bool get isComingSoon;@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? get activeFrom;@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? get activeTo; String? get showByCondition; List<Question> get questions; PreScreen? get preScreen;
+ String get id; String get title; String get description; String? get dateLabel; String? get backgroundImageUrl; int get sortOrder; bool get isActive; bool get isComingSoon;@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? get activeFrom;@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? get activeTo; String? get showByCondition; bool get showNotSeenMarker; List<Question> get questions; PreScreen? get preScreen;
 /// Create a copy of Questionnaire
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $QuestionnaireCopyWith<Questionnaire> get copyWith => _$QuestionnaireCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Questionnaire&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dateLabel, dateLabel) || other.dateLabel == dateLabel)&&(identical(other.backgroundImageUrl, backgroundImageUrl) || other.backgroundImageUrl == backgroundImageUrl)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isComingSoon, isComingSoon) || other.isComingSoon == isComingSoon)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.showByCondition, showByCondition) || other.showByCondition == showByCondition)&&const DeepCollectionEquality().equals(other.questions, questions)&&(identical(other.preScreen, preScreen) || other.preScreen == preScreen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Questionnaire&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dateLabel, dateLabel) || other.dateLabel == dateLabel)&&(identical(other.backgroundImageUrl, backgroundImageUrl) || other.backgroundImageUrl == backgroundImageUrl)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isComingSoon, isComingSoon) || other.isComingSoon == isComingSoon)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.showByCondition, showByCondition) || other.showByCondition == showByCondition)&&(identical(other.showNotSeenMarker, showNotSeenMarker) || other.showNotSeenMarker == showNotSeenMarker)&&const DeepCollectionEquality().equals(other.questions, questions)&&(identical(other.preScreen, preScreen) || other.preScreen == preScreen));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,dateLabel,backgroundImageUrl,sortOrder,isActive,isComingSoon,activeFrom,activeTo,showByCondition,const DeepCollectionEquality().hash(questions),preScreen);
+int get hashCode => Object.hash(runtimeType,id,title,description,dateLabel,backgroundImageUrl,sortOrder,isActive,isComingSoon,activeFrom,activeTo,showByCondition,showNotSeenMarker,const DeepCollectionEquality().hash(questions),preScreen);
 
 @override
 String toString() {
-  return 'Questionnaire(id: $id, title: $title, description: $description, dateLabel: $dateLabel, backgroundImageUrl: $backgroundImageUrl, sortOrder: $sortOrder, isActive: $isActive, isComingSoon: $isComingSoon, activeFrom: $activeFrom, activeTo: $activeTo, showByCondition: $showByCondition, questions: $questions, preScreen: $preScreen)';
+  return 'Questionnaire(id: $id, title: $title, description: $description, dateLabel: $dateLabel, backgroundImageUrl: $backgroundImageUrl, sortOrder: $sortOrder, isActive: $isActive, isComingSoon: $isComingSoon, activeFrom: $activeFrom, activeTo: $activeTo, showByCondition: $showByCondition, showNotSeenMarker: $showNotSeenMarker, questions: $questions, preScreen: $preScreen)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $QuestionnaireCopyWith<$Res>  {
   factory $QuestionnaireCopyWith(Questionnaire value, $Res Function(Questionnaire) _then) = _$QuestionnaireCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String description, String? dateLabel, String? backgroundImageUrl, int sortOrder, bool isActive, bool isComingSoon,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeFrom,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo, String? showByCondition, List<Question> questions, PreScreen? preScreen
+ String id, String title, String description, String? dateLabel, String? backgroundImageUrl, int sortOrder, bool isActive, bool isComingSoon,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeFrom,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo, String? showByCondition, bool showNotSeenMarker, List<Question> questions, PreScreen? preScreen
 });
 
 
@@ -65,7 +65,7 @@ class _$QuestionnaireCopyWithImpl<$Res>
 
 /// Create a copy of Questionnaire
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? dateLabel = freezed,Object? backgroundImageUrl = freezed,Object? sortOrder = null,Object? isActive = null,Object? isComingSoon = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? showByCondition = freezed,Object? questions = null,Object? preScreen = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? dateLabel = freezed,Object? backgroundImageUrl = freezed,Object? sortOrder = null,Object? isActive = null,Object? isComingSoon = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? showByCondition = freezed,Object? showNotSeenMarker = null,Object? questions = null,Object? preScreen = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -78,7 +78,8 @@ as bool,isComingSoon: null == isComingSoon ? _self.isComingSoon : isComingSoon /
 as bool,activeFrom: freezed == activeFrom ? _self.activeFrom : activeFrom // ignore: cast_nullable_to_non_nullable
 as DateTime?,activeTo: freezed == activeTo ? _self.activeTo : activeTo // ignore: cast_nullable_to_non_nullable
 as DateTime?,showByCondition: freezed == showByCondition ? _self.showByCondition : showByCondition // ignore: cast_nullable_to_non_nullable
-as String?,questions: null == questions ? _self.questions : questions // ignore: cast_nullable_to_non_nullable
+as String?,showNotSeenMarker: null == showNotSeenMarker ? _self.showNotSeenMarker : showNotSeenMarker // ignore: cast_nullable_to_non_nullable
+as bool,questions: null == questions ? _self.questions : questions // ignore: cast_nullable_to_non_nullable
 as List<Question>,preScreen: freezed == preScreen ? _self.preScreen : preScreen // ignore: cast_nullable_to_non_nullable
 as PreScreen?,
   ));
@@ -177,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String? dateLabel,  String? backgroundImageUrl,  int sortOrder,  bool isActive,  bool isComingSoon, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeTo,  String? showByCondition,  List<Question> questions,  PreScreen? preScreen)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String? dateLabel,  String? backgroundImageUrl,  int sortOrder,  bool isActive,  bool isComingSoon, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeTo,  String? showByCondition,  bool showNotSeenMarker,  List<Question> questions,  PreScreen? preScreen)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Questionnaire() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.backgroundImageUrl,_that.sortOrder,_that.isActive,_that.isComingSoon,_that.activeFrom,_that.activeTo,_that.showByCondition,_that.questions,_that.preScreen);case _:
+return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.backgroundImageUrl,_that.sortOrder,_that.isActive,_that.isComingSoon,_that.activeFrom,_that.activeTo,_that.showByCondition,_that.showNotSeenMarker,_that.questions,_that.preScreen);case _:
   return orElse();
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.bac
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String? dateLabel,  String? backgroundImageUrl,  int sortOrder,  bool isActive,  bool isComingSoon, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeTo,  String? showByCondition,  List<Question> questions,  PreScreen? preScreen)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String? dateLabel,  String? backgroundImageUrl,  int sortOrder,  bool isActive,  bool isComingSoon, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeTo,  String? showByCondition,  bool showNotSeenMarker,  List<Question> questions,  PreScreen? preScreen)  $default,) {final _that = this;
 switch (_that) {
 case _Questionnaire():
-return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.backgroundImageUrl,_that.sortOrder,_that.isActive,_that.isComingSoon,_that.activeFrom,_that.activeTo,_that.showByCondition,_that.questions,_that.preScreen);case _:
+return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.backgroundImageUrl,_that.sortOrder,_that.isActive,_that.isComingSoon,_that.activeFrom,_that.activeTo,_that.showByCondition,_that.showNotSeenMarker,_that.questions,_that.preScreen);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -218,10 +219,10 @@ return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.bac
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String? dateLabel,  String? backgroundImageUrl,  int sortOrder,  bool isActive,  bool isComingSoon, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeTo,  String? showByCondition,  List<Question> questions,  PreScreen? preScreen)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String? dateLabel,  String? backgroundImageUrl,  int sortOrder,  bool isActive,  bool isComingSoon, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson)  DateTime? activeTo,  String? showByCondition,  bool showNotSeenMarker,  List<Question> questions,  PreScreen? preScreen)?  $default,) {final _that = this;
 switch (_that) {
 case _Questionnaire() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.backgroundImageUrl,_that.sortOrder,_that.isActive,_that.isComingSoon,_that.activeFrom,_that.activeTo,_that.showByCondition,_that.questions,_that.preScreen);case _:
+return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.backgroundImageUrl,_that.sortOrder,_that.isActive,_that.isComingSoon,_that.activeFrom,_that.activeTo,_that.showByCondition,_that.showNotSeenMarker,_that.questions,_that.preScreen);case _:
   return null;
 
 }
@@ -233,7 +234,7 @@ return $default(_that.id,_that.title,_that.description,_that.dateLabel,_that.bac
 @JsonSerializable()
 
 class _Questionnaire implements Questionnaire {
-  const _Questionnaire({required this.id, required this.title, required this.description, this.dateLabel, this.backgroundImageUrl, this.sortOrder = 0, this.isActive = true, this.isComingSoon = false, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) this.activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) this.activeTo, this.showByCondition, final  List<Question> questions = const <Question>[], this.preScreen}): _questions = questions;
+  const _Questionnaire({required this.id, required this.title, required this.description, this.dateLabel, this.backgroundImageUrl, this.sortOrder = 0, this.isActive = true, this.isComingSoon = false, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) this.activeFrom, @JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) this.activeTo, this.showByCondition, this.showNotSeenMarker = true, final  List<Question> questions = const <Question>[], this.preScreen}): _questions = questions;
   factory _Questionnaire.fromJson(Map<String, dynamic> json) => _$QuestionnaireFromJson(json);
 
 @override final  String id;
@@ -247,6 +248,7 @@ class _Questionnaire implements Questionnaire {
 @override@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) final  DateTime? activeFrom;
 @override@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) final  DateTime? activeTo;
 @override final  String? showByCondition;
+@override@JsonKey() final  bool showNotSeenMarker;
  final  List<Question> _questions;
 @override@JsonKey() List<Question> get questions {
   if (_questions is EqualUnmodifiableListView) return _questions;
@@ -269,16 +271,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Questionnaire&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dateLabel, dateLabel) || other.dateLabel == dateLabel)&&(identical(other.backgroundImageUrl, backgroundImageUrl) || other.backgroundImageUrl == backgroundImageUrl)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isComingSoon, isComingSoon) || other.isComingSoon == isComingSoon)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.showByCondition, showByCondition) || other.showByCondition == showByCondition)&&const DeepCollectionEquality().equals(other._questions, _questions)&&(identical(other.preScreen, preScreen) || other.preScreen == preScreen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Questionnaire&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dateLabel, dateLabel) || other.dateLabel == dateLabel)&&(identical(other.backgroundImageUrl, backgroundImageUrl) || other.backgroundImageUrl == backgroundImageUrl)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isComingSoon, isComingSoon) || other.isComingSoon == isComingSoon)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.showByCondition, showByCondition) || other.showByCondition == showByCondition)&&(identical(other.showNotSeenMarker, showNotSeenMarker) || other.showNotSeenMarker == showNotSeenMarker)&&const DeepCollectionEquality().equals(other._questions, _questions)&&(identical(other.preScreen, preScreen) || other.preScreen == preScreen));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,dateLabel,backgroundImageUrl,sortOrder,isActive,isComingSoon,activeFrom,activeTo,showByCondition,const DeepCollectionEquality().hash(_questions),preScreen);
+int get hashCode => Object.hash(runtimeType,id,title,description,dateLabel,backgroundImageUrl,sortOrder,isActive,isComingSoon,activeFrom,activeTo,showByCondition,showNotSeenMarker,const DeepCollectionEquality().hash(_questions),preScreen);
 
 @override
 String toString() {
-  return 'Questionnaire(id: $id, title: $title, description: $description, dateLabel: $dateLabel, backgroundImageUrl: $backgroundImageUrl, sortOrder: $sortOrder, isActive: $isActive, isComingSoon: $isComingSoon, activeFrom: $activeFrom, activeTo: $activeTo, showByCondition: $showByCondition, questions: $questions, preScreen: $preScreen)';
+  return 'Questionnaire(id: $id, title: $title, description: $description, dateLabel: $dateLabel, backgroundImageUrl: $backgroundImageUrl, sortOrder: $sortOrder, isActive: $isActive, isComingSoon: $isComingSoon, activeFrom: $activeFrom, activeTo: $activeTo, showByCondition: $showByCondition, showNotSeenMarker: $showNotSeenMarker, questions: $questions, preScreen: $preScreen)';
 }
 
 
@@ -289,7 +291,7 @@ abstract mixin class _$QuestionnaireCopyWith<$Res> implements $QuestionnaireCopy
   factory _$QuestionnaireCopyWith(_Questionnaire value, $Res Function(_Questionnaire) _then) = __$QuestionnaireCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String description, String? dateLabel, String? backgroundImageUrl, int sortOrder, bool isActive, bool isComingSoon,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeFrom,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo, String? showByCondition, List<Question> questions, PreScreen? preScreen
+ String id, String title, String description, String? dateLabel, String? backgroundImageUrl, int sortOrder, bool isActive, bool isComingSoon,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeFrom,@JsonKey(fromJson: _dateFromJson, toJson: _dateToJson) DateTime? activeTo, String? showByCondition, bool showNotSeenMarker, List<Question> questions, PreScreen? preScreen
 });
 
 
@@ -306,7 +308,7 @@ class __$QuestionnaireCopyWithImpl<$Res>
 
 /// Create a copy of Questionnaire
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? dateLabel = freezed,Object? backgroundImageUrl = freezed,Object? sortOrder = null,Object? isActive = null,Object? isComingSoon = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? showByCondition = freezed,Object? questions = null,Object? preScreen = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? dateLabel = freezed,Object? backgroundImageUrl = freezed,Object? sortOrder = null,Object? isActive = null,Object? isComingSoon = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? showByCondition = freezed,Object? showNotSeenMarker = null,Object? questions = null,Object? preScreen = freezed,}) {
   return _then(_Questionnaire(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -319,7 +321,8 @@ as bool,isComingSoon: null == isComingSoon ? _self.isComingSoon : isComingSoon /
 as bool,activeFrom: freezed == activeFrom ? _self.activeFrom : activeFrom // ignore: cast_nullable_to_non_nullable
 as DateTime?,activeTo: freezed == activeTo ? _self.activeTo : activeTo // ignore: cast_nullable_to_non_nullable
 as DateTime?,showByCondition: freezed == showByCondition ? _self.showByCondition : showByCondition // ignore: cast_nullable_to_non_nullable
-as String?,questions: null == questions ? _self._questions : questions // ignore: cast_nullable_to_non_nullable
+as String?,showNotSeenMarker: null == showNotSeenMarker ? _self.showNotSeenMarker : showNotSeenMarker // ignore: cast_nullable_to_non_nullable
+as bool,questions: null == questions ? _self._questions : questions // ignore: cast_nullable_to_non_nullable
 as List<Question>,preScreen: freezed == preScreen ? _self.preScreen : preScreen // ignore: cast_nullable_to_non_nullable
 as PreScreen?,
   ));
