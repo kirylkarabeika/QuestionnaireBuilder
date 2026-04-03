@@ -50,6 +50,12 @@ class EditorController {
     );
   }
 
+  void setShowNotSeenMarker(bool value) {
+    questionnaire.value = questionnaire.value.copyWith(
+      showNotSeenMarker: value,
+    );
+  }
+
   void setBackgroundImageUrl(String? value) {
     final v = value?.trim();
     questionnaire.value = questionnaire.value.copyWith(

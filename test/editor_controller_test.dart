@@ -129,6 +129,19 @@ void main() {
     });
   });
 
+  // ── setShowNotSeenMarker ───────────────────────────────────
+
+  group('setShowNotSeenMarker', () {
+    test('defaults to true', () {
+      expect(controller.questionnaire.value.showNotSeenMarker, isTrue);
+    });
+
+    test('updates the flag', () {
+      controller.setShowNotSeenMarker(false);
+      expect(controller.questionnaire.value.showNotSeenMarker, isFalse);
+    });
+  });
+
   // ── setBackgroundImageUrl ───────────────────────────────────
 
   group('setBackgroundImageUrl', () {
@@ -542,6 +555,14 @@ void main() {
         () => controller.importJson('not valid json {{{'),
         throwsA(isA<FormatException>()),
       );
+    });
+
+    test('defaults showNotSeenMarker to true for older JSON', () {
+      controller.importJson(
+        '{"id":"legacy","title":"Legacy","description":"Imported","questions":[]}',
+      );
+
+      expect(controller.questionnaire.value.showNotSeenMarker, isTrue);
     });
   });
 }
