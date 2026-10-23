@@ -283,6 +283,205 @@ void main() {
 
   // ── updateQuestion ──────────────────────────────────────────
 
+  group('extended questions', () {
+    for (final type in [QuestionType.carousel, QuestionType.starRating]) {
+      test('adding ${type.name} requires the extended condition', () {
+        controller.setShowByCondition('try_new_features');
+        controller.addQuestion(type);
+
+        expect(
+          controller.questionnaire.value.showByCondition,
+          extendedQuestionnaireCondition,
+        );
+        final question = controller.questionnaire.value.questions.single;
+        expect(question.type, type);
+        expect(question.isSkippable, isTrue);
+        if (type == QuestionType.carousel) {
+          expect(question.selectionMode, CarouselSelectionMode.singleSelect);
+          expect(question.items, isEmpty);
+        } else {
+          expect(
+            question.starRating,
+            const StarRating(title: '', starCount: 5, description: ''),
+          );
+        }
+
+        controller.setShowByCondition(null);
+        expect(
+          controller.questionnaire.value.showByCondition,
+          extendedQuestionnaireCondition,
+        );
+        controller.setShowByCondition('try_new_features');
+        expect(
+          controller.questionnaire.value.showByCondition,
+          extendedQuestionnaireCondition,
+        );
+
+        controller.removeQuestion(question.id);
+        controller.setShowByCondition(null);
+        expect(controller.questionnaire.value.showByCondition, isNull);
+      });
+    }
+
+    for (final mode in ['single_select', 'multi_select']) {
+      test('round-trips a $mode carousel and applies its condition', () {
+        controller.importJson(
+          jsonEncode({
+            'id': 'extended',
+            'title': 'Survey',
+            'description': '',
+            'showByCondition': 'try_new_features',
+            'questions': [
+              {
+                'id': 'carousel-1',
+                'title': 'Choose your favourites',
+                'description': 'Choose from these images',
+                'imageUrl': 'https://example.com/question.png',
+                'type': 'carousel',
+                'isSkippable': false,
+                'selectionMode': mode,
+                'items': [
+                  {
+                    'id': 'a',
+                    'order': 0,
+                    'title': 'First',
+                    'imageUrl': 'https://example.com/a.png',
+                  },
+                  {
+                    'id': 'b',
+                    'order': 1,
+                    'title': 'Second',
+                    'description': 'Second item details\nMore information',
+                    'imageUrl': 'https://example.com/b.png',
+                  },
+                ],
+              },
+            ],
+          }),
+        );
+        final questionnaire = controller.questionnaire.value;
+        final question = questionnaire.questions.single;
+        expect(
+          question.selectionMode,
+          mode == 'single_select'
+              ? CarouselSelectionMode.singleSelect
+              : CarouselSelectionMode.multiSelect,
+        );
+        expect(question.items.map((item) => item.title), ['First', 'Second']);
+        expect(question.items.first.description, isEmpty);
+        expect(
+          question.items.last.description,
+          'Second item details\nMore information',
+        );
+        expect(question.isSkippable, isFalse);
+        final exported = jsonDecode(controller.exportJsonPretty());
+        expect(exported['showByCondition'], extendedQuestionnaireCondition);
+        expect(exported['questions'][0]['type'], 'carousel');
+        expect(exported['questions'][0]['selectionMode'], mode);
+        expect(exported['questions'][0]['items'][1], {
+          'id': 'b',
+          'order': 1,
+          'title': 'Second',
+          'description': 'Second item details\nMore information',
+          'imageUrl': 'https://example.com/b.png',
+        });
+        controller.newQuestionnaire();
+        controller.importJson(jsonEncode(exported));
+        expect(controller.questionnaire.value, questionnaire);
+      });
+    }
+
+    test(
+      'round-trips separate question and rating titles and descriptions',
+      () {
+        controller.addQuestion(QuestionType.starRating);
+        final question = controller.questionnaire.value.questions.single;
+        controller.updateQuestion(
+          question.id,
+          question.copyWith(
+            title: 'How was the trip?',
+            description: 'Think about your most recent drive',
+            imageUrl: 'https://example.com/trip.png',
+            isSkippable: false,
+            starRating: const StarRating(
+              title: 'Comfort',
+              starCount: 7,
+              description: 'More stars means more comfortable',
+            ),
+          ),
+        );
+        final questionnaire = controller.questionnaire.value;
+        final exported = controller.exportJsonPretty();
+        final json = jsonDecode(exported);
+        expect(json['questions'][0]['type'], 'star_rating');
+        expect(json['questions'][0]['starRating'], {
+          'title': 'Comfort',
+          'starCount': 7,
+          'description': 'More stars means more comfortable',
+        });
+        controller.newQuestionnaire();
+        controller.importJson(exported);
+        expect(controller.questionnaire.value, questionnaire);
+      },
+    );
+
+    test('updating a question type applies the extended condition', () {
+      controller.addQuestion(QuestionType.textInput);
+      final question = controller.questionnaire.value.questions.single;
+      controller.updateQuestion(
+        question.id,
+        question.copyWith(
+          type: QuestionType.starRating,
+          starRating: const StarRating(title: 'Rating', description: 'Details'),
+        ),
+      );
+      expect(
+        controller.questionnaire.value.showByCondition,
+        extendedQuestionnaireCondition,
+      );
+    });
+
+    test('legacy question types keep the selected condition', () {
+      controller.setShowByCondition('try_new_features');
+      controller.addQuestion(QuestionType.singleSelect);
+      expect(
+        controller.questionnaire.value.showByCondition,
+        'try_new_features',
+      );
+      controller.setShowByCondition(extendedQuestionnaireCondition);
+      final exported = controller.exportJsonPretty();
+      controller.newQuestionnaire();
+      controller.importJson(exported);
+      expect(
+        controller.questionnaire.value.showByCondition,
+        extendedQuestionnaireCondition,
+      );
+    });
+
+    test(
+      'rating star count defaults to five and rejects invalid imported counts',
+      () {
+        expect(
+          StarRating.fromJson({
+            'title': 'Rating',
+            'description': 'Details',
+          }).starCount,
+          5,
+        );
+        for (final count in [0, -1, 2.5, 'five']) {
+          expect(
+            () => StarRating.fromJson({
+              'title': 'Rating',
+              'description': 'Details',
+              'starCount': count,
+            }),
+            throwsFormatException,
+          );
+        }
+      },
+    );
+  });
+
   group('updateQuestion', () {
     test('updates the matching question', () {
       controller.addQuestion(QuestionType.textInput);
@@ -308,6 +507,62 @@ void main() {
   });
 
   // ── removeQuestion ──────────────────────────────────────────
+
+  group('question optional fields', () {
+    for (final type in QuestionType.values) {
+      test('supports descriptions and image URLs for ${type.name}', () {
+        final legacy =
+            Question(id: 'question-1', title: 'Question', type: type).toJson()
+              ..remove('description')
+              ..remove('imageUrl');
+        controller.importJson(
+          jsonEncode({
+            'id': 'survey',
+            'title': 'Survey',
+            'description': '',
+            'questions': [legacy],
+          }),
+        );
+        final question = controller.questionnaire.value.questions.single;
+        expect(question.description, isNull);
+        expect(question.imageUrl, isNull);
+
+        const description = 'First line\nSecond line.';
+        const imageUrl = 'https://example.com/question.png';
+        controller.updateQuestion(
+          question.id,
+          question.copyWith(description: description, imageUrl: imageUrl),
+        );
+        final exported = controller.exportJsonPretty();
+        expect(
+          jsonDecode(exported)['questions'][0]['description'],
+          description,
+        );
+        expect(jsonDecode(exported)['questions'][0]['imageUrl'], imageUrl);
+        controller.newQuestionnaire();
+        controller.importJson(exported);
+        final restored = controller.questionnaire.value.questions.single;
+        expect(restored.type, type);
+        expect(restored.description, description);
+        expect(restored.imageUrl, imageUrl);
+
+        controller.updateQuestion(
+          restored.id,
+          restored.copyWith(description: null, imageUrl: null),
+        );
+        expect(
+          jsonDecode(
+            controller.exportJsonPretty(),
+          )['questions'][0]['description'],
+          isNull,
+        );
+        expect(
+          jsonDecode(controller.exportJsonPretty())['questions'][0]['imageUrl'],
+          isNull,
+        );
+      });
+    }
+  });
 
   group('removeQuestion', () {
     test('removes the question by id', () {
@@ -504,6 +759,133 @@ void main() {
   });
 
   // ── exportJsonPretty ────────────────────────────────────────
+
+  group('list pre-screen', () {
+    test('imports and exports items with the exact iconURL key', () {
+      controller.importJson(
+        jsonEncode({
+          'id': 'list-survey',
+          'title': 'Survey',
+          'description': '',
+          'preScreen': {
+            'title': 'Before you start',
+            'description': 'Please read',
+            'style': 'list',
+            'items': [
+              {
+                'title': 'Have your keys ready',
+                'iconURL': 'https://example.com/key.png',
+              },
+              {
+                'title': 'Allow a few minutes',
+                'iconURL': 'https://example.com/clock.png',
+              },
+            ],
+          },
+        }),
+      );
+
+      final preScreen = controller.questionnaire.value.preScreen!;
+      expect(preScreen.style, PreScreenStyle.list);
+      expect(preScreen.cards, isEmpty);
+      expect(preScreen.items.map((item) => item.title), [
+        'Have your keys ready',
+        'Allow a few minutes',
+      ]);
+      final exported = jsonDecode(controller.exportJsonPretty());
+      expect(exported['preScreen']['style'], 'list');
+      expect(exported['preScreen']['items'], [
+        {
+          'title': 'Have your keys ready',
+          'iconURL': 'https://example.com/key.png',
+        },
+        {
+          'title': 'Allow a few minutes',
+          'iconURL': 'https://example.com/clock.png',
+        },
+      ]);
+
+      controller.newQuestionnaire();
+      controller.importJson(jsonEncode(exported));
+      expect(controller.questionnaire.value.preScreen, preScreen);
+    });
+
+    test('imports legacy cards without a style', () {
+      controller.importJson(
+        jsonEncode({
+          'id': 'legacy',
+          'title': 'Survey',
+          'description': '',
+          'preScreen': {
+            'title': 'Welcome',
+            'description': 'Please read',
+            'cards': [
+              {
+                'title': 'Original card',
+                'description': 'Original description',
+                'imageUrl': 'https://example.com/card.png',
+                'buttonTitle': 'Learn more',
+                'buttonUrl': 'https://example.com',
+              },
+            ],
+          },
+        }),
+      );
+
+      final preScreen = controller.questionnaire.value.preScreen!;
+      expect(preScreen.style, PreScreenStyle.cards);
+      expect(preScreen.items, isEmpty);
+      expect(
+        preScreen.cards.single,
+        const PreScreenCard(
+          title: 'Original card',
+          description: 'Original description',
+          imageUrl: 'https://example.com/card.png',
+          buttonTitle: 'Learn more',
+          buttonUrl: 'https://example.com',
+        ),
+      );
+    });
+
+    test('edits and removes items while preserving content across styles', () {
+      controller.enablePreScreen(true);
+      controller.addPreScreenCard();
+      const card = PreScreenCard(
+        title: 'Keep this card',
+        description: 'Details',
+      );
+      controller.updatePreScreenCard(0, card);
+      controller.setPreScreenStyle(PreScreenStyle.list);
+      controller.addPreScreenItem();
+      controller.addPreScreenItem();
+      const item = PreScreenItem(
+        title: 'Keep this item',
+        iconUrl: 'https://example.com/icon.png',
+      );
+      controller.updatePreScreenItem(1, item);
+      controller.removePreScreenItem(0);
+      controller.setPreScreenStyle(PreScreenStyle.cards);
+
+      final exported = controller.exportJsonPretty();
+      controller.newQuestionnaire();
+      controller.importJson(exported);
+      expect(controller.questionnaire.value.preScreen!.cards, [card]);
+      controller.setPreScreenStyle(PreScreenStyle.list);
+      expect(controller.questionnaire.value.preScreen!.items, [item]);
+    });
+
+    test('does nothing when the pre-screen is disabled', () {
+      controller.setPreScreenStyle(PreScreenStyle.list);
+      controller.addPreScreenItem();
+      controller.updatePreScreenItem(
+        0,
+        const PreScreenItem(title: '', iconUrl: ''),
+      );
+      controller.removePreScreenItem(0);
+
+      expect(controller.questionnaire.value.preScreen, isNull);
+    });
+  });
 
   group('exportJsonPretty', () {
     test('returns a valid JSON string', () {

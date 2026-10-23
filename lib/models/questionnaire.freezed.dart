@@ -347,7 +347,7 @@ $PreScreenCopyWith<$Res>? get preScreen {
 /// @nodoc
 mixin _$Question {
 
- String get id; int get order; String get title; QuestionType get type; bool get isSkippable; List<Option> get options;
+ String get id; int get order; String get title; String? get description; String? get imageUrl; QuestionType get type; bool get isSkippable; List<Option> get options; CarouselSelectionMode get selectionMode; List<CarouselItem> get items; StarRating? get starRating;
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -360,16 +360,16 @@ $QuestionCopyWith<Question> get copyWith => _$QuestionCopyWithImpl<Question>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other.options, options));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other.options, options)&&(identical(other.selectionMode, selectionMode) || other.selectionMode == selectionMode)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.starRating, starRating) || other.starRating == starRating));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,order,title,type,isSkippable,const DeepCollectionEquality().hash(options));
+int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl,type,isSkippable,const DeepCollectionEquality().hash(options),selectionMode,const DeepCollectionEquality().hash(items),starRating);
 
 @override
 String toString() {
-  return 'Question(id: $id, order: $order, title: $title, type: $type, isSkippable: $isSkippable, options: $options)';
+  return 'Question(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl, type: $type, isSkippable: $isSkippable, options: $options, selectionMode: $selectionMode, items: $items, starRating: $starRating)';
 }
 
 
@@ -380,11 +380,11 @@ abstract mixin class $QuestionCopyWith<$Res>  {
   factory $QuestionCopyWith(Question value, $Res Function(Question) _then) = _$QuestionCopyWithImpl;
 @useResult
 $Res call({
- String id, int order, String title, QuestionType type, bool isSkippable, List<Option> options
+ String id, int order, String title, String? description, String? imageUrl, QuestionType type, bool isSkippable, List<Option> options, CarouselSelectionMode selectionMode, List<CarouselItem> items, StarRating? starRating
 });
 
 
-
+$StarRatingCopyWith<$Res>? get starRating;
 
 }
 /// @nodoc
@@ -397,18 +397,35 @@ class _$QuestionCopyWithImpl<$Res>
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? title = null,Object? type = null,Object? isSkippable = null,Object? options = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = freezed,Object? imageUrl = freezed,Object? type = null,Object? isSkippable = null,Object? options = null,Object? selectionMode = null,Object? items = null,Object? starRating = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as QuestionType,isSkippable: null == isSkippable ? _self.isSkippable : isSkippable // ignore: cast_nullable_to_non_nullable
 as bool,options: null == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
-as List<Option>,
+as List<Option>,selectionMode: null == selectionMode ? _self.selectionMode : selectionMode // ignore: cast_nullable_to_non_nullable
+as CarouselSelectionMode,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<CarouselItem>,starRating: freezed == starRating ? _self.starRating : starRating // ignore: cast_nullable_to_non_nullable
+as StarRating?,
   ));
 }
+/// Create a copy of Question
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StarRatingCopyWith<$Res>? get starRating {
+    if (_self.starRating == null) {
+    return null;
+  }
 
+  return $StarRatingCopyWith<$Res>(_self.starRating!, (value) {
+    return _then(_self.copyWith(starRating: value));
+  });
+}
 }
 
 
@@ -490,10 +507,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String title,  QuestionType type,  bool isSkippable,  List<Option> options)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  CarouselSelectionMode selectionMode,  List<CarouselItem> items,  StarRating? starRating)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Question() when $default != null:
-return $default(_that.id,_that.order,_that.title,_that.type,_that.isSkippable,_that.options);case _:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.selectionMode,_that.items,_that.starRating);case _:
   return orElse();
 
 }
@@ -511,10 +528,10 @@ return $default(_that.id,_that.order,_that.title,_that.type,_that.isSkippable,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String title,  QuestionType type,  bool isSkippable,  List<Option> options)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  CarouselSelectionMode selectionMode,  List<CarouselItem> items,  StarRating? starRating)  $default,) {final _that = this;
 switch (_that) {
 case _Question():
-return $default(_that.id,_that.order,_that.title,_that.type,_that.isSkippable,_that.options);case _:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.selectionMode,_that.items,_that.starRating);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -531,10 +548,10 @@ return $default(_that.id,_that.order,_that.title,_that.type,_that.isSkippable,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String title,  QuestionType type,  bool isSkippable,  List<Option> options)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  CarouselSelectionMode selectionMode,  List<CarouselItem> items,  StarRating? starRating)?  $default,) {final _that = this;
 switch (_that) {
 case _Question() when $default != null:
-return $default(_that.id,_that.order,_that.title,_that.type,_that.isSkippable,_that.options);case _:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.selectionMode,_that.items,_that.starRating);case _:
   return null;
 
 }
@@ -546,12 +563,14 @@ return $default(_that.id,_that.order,_that.title,_that.type,_that.isSkippable,_t
 @JsonSerializable()
 
 class _Question implements Question {
-  const _Question({required this.id, this.order = 0, required this.title, required this.type, this.isSkippable = true, final  List<Option> options = const <Option>[]}): _options = options;
+  const _Question({required this.id, this.order = 0, required this.title, this.description, this.imageUrl, required this.type, this.isSkippable = true, final  List<Option> options = const <Option>[], this.selectionMode = CarouselSelectionMode.singleSelect, final  List<CarouselItem> items = const <CarouselItem>[], this.starRating}): _options = options,_items = items;
   factory _Question.fromJson(Map<String, dynamic> json) => _$QuestionFromJson(json);
 
 @override final  String id;
 @override@JsonKey() final  int order;
 @override final  String title;
+@override final  String? description;
+@override final  String? imageUrl;
 @override final  QuestionType type;
 @override@JsonKey() final  bool isSkippable;
  final  List<Option> _options;
@@ -561,6 +580,15 @@ class _Question implements Question {
   return EqualUnmodifiableListView(_options);
 }
 
+@override@JsonKey() final  CarouselSelectionMode selectionMode;
+ final  List<CarouselItem> _items;
+@override@JsonKey() List<CarouselItem> get items {
+  if (_items is EqualUnmodifiableListView) return _items;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_items);
+}
+
+@override final  StarRating? starRating;
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
@@ -575,16 +603,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other._options, _options));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other._options, _options)&&(identical(other.selectionMode, selectionMode) || other.selectionMode == selectionMode)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.starRating, starRating) || other.starRating == starRating));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,order,title,type,isSkippable,const DeepCollectionEquality().hash(_options));
+int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl,type,isSkippable,const DeepCollectionEquality().hash(_options),selectionMode,const DeepCollectionEquality().hash(_items),starRating);
 
 @override
 String toString() {
-  return 'Question(id: $id, order: $order, title: $title, type: $type, isSkippable: $isSkippable, options: $options)';
+  return 'Question(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl, type: $type, isSkippable: $isSkippable, options: $options, selectionMode: $selectionMode, items: $items, starRating: $starRating)';
 }
 
 
@@ -595,11 +623,11 @@ abstract mixin class _$QuestionCopyWith<$Res> implements $QuestionCopyWith<$Res>
   factory _$QuestionCopyWith(_Question value, $Res Function(_Question) _then) = __$QuestionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int order, String title, QuestionType type, bool isSkippable, List<Option> options
+ String id, int order, String title, String? description, String? imageUrl, QuestionType type, bool isSkippable, List<Option> options, CarouselSelectionMode selectionMode, List<CarouselItem> items, StarRating? starRating
 });
 
 
-
+@override $StarRatingCopyWith<$Res>? get starRating;
 
 }
 /// @nodoc
@@ -612,19 +640,36 @@ class __$QuestionCopyWithImpl<$Res>
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? title = null,Object? type = null,Object? isSkippable = null,Object? options = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = freezed,Object? imageUrl = freezed,Object? type = null,Object? isSkippable = null,Object? options = null,Object? selectionMode = null,Object? items = null,Object? starRating = freezed,}) {
   return _then(_Question(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as QuestionType,isSkippable: null == isSkippable ? _self.isSkippable : isSkippable // ignore: cast_nullable_to_non_nullable
 as bool,options: null == options ? _self._options : options // ignore: cast_nullable_to_non_nullable
-as List<Option>,
+as List<Option>,selectionMode: null == selectionMode ? _self.selectionMode : selectionMode // ignore: cast_nullable_to_non_nullable
+as CarouselSelectionMode,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<CarouselItem>,starRating: freezed == starRating ? _self.starRating : starRating // ignore: cast_nullable_to_non_nullable
+as StarRating?,
   ));
 }
 
+/// Create a copy of Question
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StarRatingCopyWith<$Res>? get starRating {
+    if (_self.starRating == null) {
+    return null;
+  }
 
+  return $StarRatingCopyWith<$Res>(_self.starRating!, (value) {
+    return _then(_self.copyWith(starRating: value));
+  });
+}
 }
 
 
@@ -904,9 +949,553 @@ as String?,
 
 
 /// @nodoc
+mixin _$CarouselItem {
+
+ String get id; int get order; String get title; String get description; String get imageUrl;
+/// Create a copy of CarouselItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CarouselItemCopyWith<CarouselItem> get copyWith => _$CarouselItemCopyWithImpl<CarouselItem>(this as CarouselItem, _$identity);
+
+  /// Serializes this CarouselItem to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CarouselItem&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl);
+
+@override
+String toString() {
+  return 'CarouselItem(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CarouselItemCopyWith<$Res>  {
+  factory $CarouselItemCopyWith(CarouselItem value, $Res Function(CarouselItem) _then) = _$CarouselItemCopyWithImpl;
+@useResult
+$Res call({
+ String id, int order, String title, String description, String imageUrl
+});
+
+
+
+
+}
+/// @nodoc
+class _$CarouselItemCopyWithImpl<$Res>
+    implements $CarouselItemCopyWith<$Res> {
+  _$CarouselItemCopyWithImpl(this._self, this._then);
+
+  final CarouselItem _self;
+  final $Res Function(CarouselItem) _then;
+
+/// Create a copy of CarouselItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = null,Object? imageUrl = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CarouselItem].
+extension CarouselItemPatterns on CarouselItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CarouselItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CarouselItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CarouselItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _CarouselItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CarouselItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CarouselItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String description,  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CarouselItem() when $default != null:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String description,  String imageUrl)  $default,) {final _that = this;
+switch (_that) {
+case _CarouselItem():
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String title,  String description,  String imageUrl)?  $default,) {final _that = this;
+switch (_that) {
+case _CarouselItem() when $default != null:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CarouselItem implements CarouselItem {
+  const _CarouselItem({required this.id, this.order = 0, required this.title, this.description = '', required this.imageUrl});
+  factory _CarouselItem.fromJson(Map<String, dynamic> json) => _$CarouselItemFromJson(json);
+
+@override final  String id;
+@override@JsonKey() final  int order;
+@override final  String title;
+@override@JsonKey() final  String description;
+@override final  String imageUrl;
+
+/// Create a copy of CarouselItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CarouselItemCopyWith<_CarouselItem> get copyWith => __$CarouselItemCopyWithImpl<_CarouselItem>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CarouselItemToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CarouselItem&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl);
+
+@override
+String toString() {
+  return 'CarouselItem(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CarouselItemCopyWith<$Res> implements $CarouselItemCopyWith<$Res> {
+  factory _$CarouselItemCopyWith(_CarouselItem value, $Res Function(_CarouselItem) _then) = __$CarouselItemCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, int order, String title, String description, String imageUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$CarouselItemCopyWithImpl<$Res>
+    implements _$CarouselItemCopyWith<$Res> {
+  __$CarouselItemCopyWithImpl(this._self, this._then);
+
+  final _CarouselItem _self;
+  final $Res Function(_CarouselItem) _then;
+
+/// Create a copy of CarouselItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = null,Object? imageUrl = null,}) {
+  return _then(_CarouselItem(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$StarRating {
+
+ String get title;@JsonKey(fromJson: _starCountFromJson) int get starCount; String get description;
+/// Create a copy of StarRating
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$StarRatingCopyWith<StarRating> get copyWith => _$StarRatingCopyWithImpl<StarRating>(this as StarRating, _$identity);
+
+  /// Serializes this StarRating to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StarRating&&(identical(other.title, title) || other.title == title)&&(identical(other.starCount, starCount) || other.starCount == starCount)&&(identical(other.description, description) || other.description == description));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,title,starCount,description);
+
+@override
+String toString() {
+  return 'StarRating(title: $title, starCount: $starCount, description: $description)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $StarRatingCopyWith<$Res>  {
+  factory $StarRatingCopyWith(StarRating value, $Res Function(StarRating) _then) = _$StarRatingCopyWithImpl;
+@useResult
+$Res call({
+ String title,@JsonKey(fromJson: _starCountFromJson) int starCount, String description
+});
+
+
+
+
+}
+/// @nodoc
+class _$StarRatingCopyWithImpl<$Res>
+    implements $StarRatingCopyWith<$Res> {
+  _$StarRatingCopyWithImpl(this._self, this._then);
+
+  final StarRating _self;
+  final $Res Function(StarRating) _then;
+
+/// Create a copy of StarRating
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? starCount = null,Object? description = null,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,starCount: null == starCount ? _self.starCount : starCount // ignore: cast_nullable_to_non_nullable
+as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [StarRating].
+extension StarRatingPatterns on StarRating {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _StarRating value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _StarRating() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _StarRating value)  $default,){
+final _that = this;
+switch (_that) {
+case _StarRating():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _StarRating value)?  $default,){
+final _that = this;
+switch (_that) {
+case _StarRating() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title, @JsonKey(fromJson: _starCountFromJson)  int starCount,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _StarRating() when $default != null:
+return $default(_that.title,_that.starCount,_that.description);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title, @JsonKey(fromJson: _starCountFromJson)  int starCount,  String description)  $default,) {final _that = this;
+switch (_that) {
+case _StarRating():
+return $default(_that.title,_that.starCount,_that.description);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title, @JsonKey(fromJson: _starCountFromJson)  int starCount,  String description)?  $default,) {final _that = this;
+switch (_that) {
+case _StarRating() when $default != null:
+return $default(_that.title,_that.starCount,_that.description);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _StarRating implements StarRating {
+  const _StarRating({required this.title, @JsonKey(fromJson: _starCountFromJson) this.starCount = 5, required this.description});
+  factory _StarRating.fromJson(Map<String, dynamic> json) => _$StarRatingFromJson(json);
+
+@override final  String title;
+@override@JsonKey(fromJson: _starCountFromJson) final  int starCount;
+@override final  String description;
+
+/// Create a copy of StarRating
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$StarRatingCopyWith<_StarRating> get copyWith => __$StarRatingCopyWithImpl<_StarRating>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$StarRatingToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StarRating&&(identical(other.title, title) || other.title == title)&&(identical(other.starCount, starCount) || other.starCount == starCount)&&(identical(other.description, description) || other.description == description));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,title,starCount,description);
+
+@override
+String toString() {
+  return 'StarRating(title: $title, starCount: $starCount, description: $description)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$StarRatingCopyWith<$Res> implements $StarRatingCopyWith<$Res> {
+  factory _$StarRatingCopyWith(_StarRating value, $Res Function(_StarRating) _then) = __$StarRatingCopyWithImpl;
+@override @useResult
+$Res call({
+ String title,@JsonKey(fromJson: _starCountFromJson) int starCount, String description
+});
+
+
+
+
+}
+/// @nodoc
+class __$StarRatingCopyWithImpl<$Res>
+    implements _$StarRatingCopyWith<$Res> {
+  __$StarRatingCopyWithImpl(this._self, this._then);
+
+  final _StarRating _self;
+  final $Res Function(_StarRating) _then;
+
+/// Create a copy of StarRating
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? starCount = null,Object? description = null,}) {
+  return _then(_StarRating(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,starCount: null == starCount ? _self.starCount : starCount // ignore: cast_nullable_to_non_nullable
+as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$PreScreen {
 
- String get title; String get description; List<PreScreenCard> get cards;
+ String get title; String get description; PreScreenStyle get style; List<PreScreenCard> get cards; List<PreScreenItem> get items;
 /// Create a copy of PreScreen
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -919,16 +1508,16 @@ $PreScreenCopyWith<PreScreen> get copyWith => _$PreScreenCopyWithImpl<PreScreen>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PreScreen&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.cards, cards));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PreScreen&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.style, style) || other.style == style)&&const DeepCollectionEquality().equals(other.cards, cards)&&const DeepCollectionEquality().equals(other.items, items));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,description,const DeepCollectionEquality().hash(cards));
+int get hashCode => Object.hash(runtimeType,title,description,style,const DeepCollectionEquality().hash(cards),const DeepCollectionEquality().hash(items));
 
 @override
 String toString() {
-  return 'PreScreen(title: $title, description: $description, cards: $cards)';
+  return 'PreScreen(title: $title, description: $description, style: $style, cards: $cards, items: $items)';
 }
 
 
@@ -939,7 +1528,7 @@ abstract mixin class $PreScreenCopyWith<$Res>  {
   factory $PreScreenCopyWith(PreScreen value, $Res Function(PreScreen) _then) = _$PreScreenCopyWithImpl;
 @useResult
 $Res call({
- String title, String description, List<PreScreenCard> cards
+ String title, String description, PreScreenStyle style, List<PreScreenCard> cards, List<PreScreenItem> items
 });
 
 
@@ -956,12 +1545,14 @@ class _$PreScreenCopyWithImpl<$Res>
 
 /// Create a copy of PreScreen
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? description = null,Object? cards = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? description = null,Object? style = null,Object? cards = null,Object? items = null,}) {
   return _then(_self.copyWith(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
-as List<PreScreenCard>,
+as String,style: null == style ? _self.style : style // ignore: cast_nullable_to_non_nullable
+as PreScreenStyle,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
+as List<PreScreenCard>,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<PreScreenItem>,
   ));
 }
 
@@ -1046,10 +1637,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  String description,  List<PreScreenCard> cards)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  String description,  PreScreenStyle style,  List<PreScreenCard> cards,  List<PreScreenItem> items)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PreScreen() when $default != null:
-return $default(_that.title,_that.description,_that.cards);case _:
+return $default(_that.title,_that.description,_that.style,_that.cards,_that.items);case _:
   return orElse();
 
 }
@@ -1067,10 +1658,10 @@ return $default(_that.title,_that.description,_that.cards);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  String description,  List<PreScreenCard> cards)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  String description,  PreScreenStyle style,  List<PreScreenCard> cards,  List<PreScreenItem> items)  $default,) {final _that = this;
 switch (_that) {
 case _PreScreen():
-return $default(_that.title,_that.description,_that.cards);case _:
+return $default(_that.title,_that.description,_that.style,_that.cards,_that.items);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1087,10 +1678,10 @@ return $default(_that.title,_that.description,_that.cards);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  String description,  List<PreScreenCard> cards)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  String description,  PreScreenStyle style,  List<PreScreenCard> cards,  List<PreScreenItem> items)?  $default,) {final _that = this;
 switch (_that) {
 case _PreScreen() when $default != null:
-return $default(_that.title,_that.description,_that.cards);case _:
+return $default(_that.title,_that.description,_that.style,_that.cards,_that.items);case _:
   return null;
 
 }
@@ -1102,16 +1693,24 @@ return $default(_that.title,_that.description,_that.cards);case _:
 @JsonSerializable()
 
 class _PreScreen implements PreScreen {
-  const _PreScreen({required this.title, required this.description, final  List<PreScreenCard> cards = const <PreScreenCard>[]}): _cards = cards;
+  const _PreScreen({required this.title, required this.description, this.style = PreScreenStyle.cards, final  List<PreScreenCard> cards = const <PreScreenCard>[], final  List<PreScreenItem> items = const <PreScreenItem>[]}): _cards = cards,_items = items;
   factory _PreScreen.fromJson(Map<String, dynamic> json) => _$PreScreenFromJson(json);
 
 @override final  String title;
 @override final  String description;
+@override@JsonKey() final  PreScreenStyle style;
  final  List<PreScreenCard> _cards;
 @override@JsonKey() List<PreScreenCard> get cards {
   if (_cards is EqualUnmodifiableListView) return _cards;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_cards);
+}
+
+ final  List<PreScreenItem> _items;
+@override@JsonKey() List<PreScreenItem> get items {
+  if (_items is EqualUnmodifiableListView) return _items;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_items);
 }
 
 
@@ -1128,16 +1727,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PreScreen&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._cards, _cards));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PreScreen&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.style, style) || other.style == style)&&const DeepCollectionEquality().equals(other._cards, _cards)&&const DeepCollectionEquality().equals(other._items, _items));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,description,const DeepCollectionEquality().hash(_cards));
+int get hashCode => Object.hash(runtimeType,title,description,style,const DeepCollectionEquality().hash(_cards),const DeepCollectionEquality().hash(_items));
 
 @override
 String toString() {
-  return 'PreScreen(title: $title, description: $description, cards: $cards)';
+  return 'PreScreen(title: $title, description: $description, style: $style, cards: $cards, items: $items)';
 }
 
 
@@ -1148,7 +1747,7 @@ abstract mixin class _$PreScreenCopyWith<$Res> implements $PreScreenCopyWith<$Re
   factory _$PreScreenCopyWith(_PreScreen value, $Res Function(_PreScreen) _then) = __$PreScreenCopyWithImpl;
 @override @useResult
 $Res call({
- String title, String description, List<PreScreenCard> cards
+ String title, String description, PreScreenStyle style, List<PreScreenCard> cards, List<PreScreenItem> items
 });
 
 
@@ -1165,12 +1764,14 @@ class __$PreScreenCopyWithImpl<$Res>
 
 /// Create a copy of PreScreen
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? description = null,Object? cards = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? description = null,Object? style = null,Object? cards = null,Object? items = null,}) {
   return _then(_PreScreen(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,cards: null == cards ? _self._cards : cards // ignore: cast_nullable_to_non_nullable
-as List<PreScreenCard>,
+as String,style: null == style ? _self.style : style // ignore: cast_nullable_to_non_nullable
+as PreScreenStyle,cards: null == cards ? _self._cards : cards // ignore: cast_nullable_to_non_nullable
+as List<PreScreenCard>,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<PreScreenItem>,
   ));
 }
 
@@ -1446,6 +2047,272 @@ as String?,description: null == description ? _self.description : description //
 as String,buttonTitle: freezed == buttonTitle ? _self.buttonTitle : buttonTitle // ignore: cast_nullable_to_non_nullable
 as String?,buttonUrl: freezed == buttonUrl ? _self.buttonUrl : buttonUrl // ignore: cast_nullable_to_non_nullable
 as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$PreScreenItem {
+
+ String get title;@JsonKey(name: 'iconURL') String get iconUrl;
+/// Create a copy of PreScreenItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PreScreenItemCopyWith<PreScreenItem> get copyWith => _$PreScreenItemCopyWithImpl<PreScreenItem>(this as PreScreenItem, _$identity);
+
+  /// Serializes this PreScreenItem to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PreScreenItem&&(identical(other.title, title) || other.title == title)&&(identical(other.iconUrl, iconUrl) || other.iconUrl == iconUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,title,iconUrl);
+
+@override
+String toString() {
+  return 'PreScreenItem(title: $title, iconUrl: $iconUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PreScreenItemCopyWith<$Res>  {
+  factory $PreScreenItemCopyWith(PreScreenItem value, $Res Function(PreScreenItem) _then) = _$PreScreenItemCopyWithImpl;
+@useResult
+$Res call({
+ String title,@JsonKey(name: 'iconURL') String iconUrl
+});
+
+
+
+
+}
+/// @nodoc
+class _$PreScreenItemCopyWithImpl<$Res>
+    implements $PreScreenItemCopyWith<$Res> {
+  _$PreScreenItemCopyWithImpl(this._self, this._then);
+
+  final PreScreenItem _self;
+  final $Res Function(PreScreenItem) _then;
+
+/// Create a copy of PreScreenItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? iconUrl = null,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,iconUrl: null == iconUrl ? _self.iconUrl : iconUrl // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PreScreenItem].
+extension PreScreenItemPatterns on PreScreenItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PreScreenItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PreScreenItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PreScreenItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _PreScreenItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PreScreenItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PreScreenItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title, @JsonKey(name: 'iconURL')  String iconUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PreScreenItem() when $default != null:
+return $default(_that.title,_that.iconUrl);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title, @JsonKey(name: 'iconURL')  String iconUrl)  $default,) {final _that = this;
+switch (_that) {
+case _PreScreenItem():
+return $default(_that.title,_that.iconUrl);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title, @JsonKey(name: 'iconURL')  String iconUrl)?  $default,) {final _that = this;
+switch (_that) {
+case _PreScreenItem() when $default != null:
+return $default(_that.title,_that.iconUrl);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _PreScreenItem implements PreScreenItem {
+  const _PreScreenItem({required this.title, @JsonKey(name: 'iconURL') required this.iconUrl});
+  factory _PreScreenItem.fromJson(Map<String, dynamic> json) => _$PreScreenItemFromJson(json);
+
+@override final  String title;
+@override@JsonKey(name: 'iconURL') final  String iconUrl;
+
+/// Create a copy of PreScreenItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PreScreenItemCopyWith<_PreScreenItem> get copyWith => __$PreScreenItemCopyWithImpl<_PreScreenItem>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$PreScreenItemToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PreScreenItem&&(identical(other.title, title) || other.title == title)&&(identical(other.iconUrl, iconUrl) || other.iconUrl == iconUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,title,iconUrl);
+
+@override
+String toString() {
+  return 'PreScreenItem(title: $title, iconUrl: $iconUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PreScreenItemCopyWith<$Res> implements $PreScreenItemCopyWith<$Res> {
+  factory _$PreScreenItemCopyWith(_PreScreenItem value, $Res Function(_PreScreenItem) _then) = __$PreScreenItemCopyWithImpl;
+@override @useResult
+$Res call({
+ String title,@JsonKey(name: 'iconURL') String iconUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$PreScreenItemCopyWithImpl<$Res>
+    implements _$PreScreenItemCopyWith<$Res> {
+  __$PreScreenItemCopyWithImpl(this._self, this._then);
+
+  final _PreScreenItem _self;
+  final $Res Function(_PreScreenItem) _then;
+
+/// Create a copy of PreScreenItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? iconUrl = null,}) {
+  return _then(_PreScreenItem(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,iconUrl: null == iconUrl ? _self.iconUrl : iconUrl // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

@@ -52,6 +52,8 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
   id: json['id'] as String,
   order: (json['order'] as num?)?.toInt() ?? 0,
   title: json['title'] as String,
+  description: json['description'] as String?,
+  imageUrl: json['imageUrl'] as String?,
   type: $enumDecode(_$QuestionTypeEnumMap, json['type']),
   isSkippable: json['isSkippable'] as bool? ?? true,
   options:
@@ -59,15 +61,34 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
           ?.map((e) => Option.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <Option>[],
+  selectionMode:
+      $enumDecodeNullable(
+        _$CarouselSelectionModeEnumMap,
+        json['selectionMode'],
+      ) ??
+      CarouselSelectionMode.singleSelect,
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map((e) => CarouselItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <CarouselItem>[],
+  starRating: json['starRating'] == null
+      ? null
+      : StarRating.fromJson(json['starRating'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
   'id': instance.id,
   'order': instance.order,
   'title': instance.title,
+  'description': instance.description,
+  'imageUrl': instance.imageUrl,
   'type': _$QuestionTypeEnumMap[instance.type]!,
   'isSkippable': instance.isSkippable,
   'options': instance.options,
+  'selectionMode': _$CarouselSelectionModeEnumMap[instance.selectionMode]!,
+  'items': instance.items,
+  'starRating': instance.starRating,
 };
 
 const _$QuestionTypeEnumMap = {
@@ -75,6 +96,13 @@ const _$QuestionTypeEnumMap = {
   QuestionType.multiSelect: 'multi_select',
   QuestionType.textInput: 'text_input',
   QuestionType.prominentSingleSelect: 'prominent_single_select',
+  QuestionType.carousel: 'carousel',
+  QuestionType.starRating: 'star_rating',
+};
+
+const _$CarouselSelectionModeEnumMap = {
+  CarouselSelectionMode.singleSelect: 'single_select',
+  CarouselSelectionMode.multiSelect: 'multi_select',
 };
 
 _Option _$OptionFromJson(Map<String, dynamic> json) => _Option(
@@ -93,22 +121,70 @@ Map<String, dynamic> _$OptionToJson(_Option instance) => <String, dynamic>{
   'imageUrl': instance.imageUrl,
 };
 
+_CarouselItem _$CarouselItemFromJson(Map<String, dynamic> json) =>
+    _CarouselItem(
+      id: json['id'] as String,
+      order: (json['order'] as num?)?.toInt() ?? 0,
+      title: json['title'] as String,
+      description: json['description'] as String? ?? '',
+      imageUrl: json['imageUrl'] as String,
+    );
+
+Map<String, dynamic> _$CarouselItemToJson(_CarouselItem instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'order': instance.order,
+      'title': instance.title,
+      'description': instance.description,
+      'imageUrl': instance.imageUrl,
+    };
+
+_StarRating _$StarRatingFromJson(Map<String, dynamic> json) => _StarRating(
+  title: json['title'] as String,
+  starCount: json['starCount'] == null
+      ? 5
+      : _starCountFromJson(json['starCount']),
+  description: json['description'] as String,
+);
+
+Map<String, dynamic> _$StarRatingToJson(_StarRating instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'starCount': instance.starCount,
+      'description': instance.description,
+    };
+
 _PreScreen _$PreScreenFromJson(Map<String, dynamic> json) => _PreScreen(
   title: json['title'] as String,
   description: json['description'] as String,
+  style:
+      $enumDecodeNullable(_$PreScreenStyleEnumMap, json['style']) ??
+      PreScreenStyle.cards,
   cards:
       (json['cards'] as List<dynamic>?)
           ?.map((e) => PreScreenCard.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <PreScreenCard>[],
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map((e) => PreScreenItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <PreScreenItem>[],
 );
 
 Map<String, dynamic> _$PreScreenToJson(_PreScreen instance) =>
     <String, dynamic>{
       'title': instance.title,
       'description': instance.description,
+      'style': _$PreScreenStyleEnumMap[instance.style]!,
       'cards': instance.cards,
+      'items': instance.items,
     };
+
+const _$PreScreenStyleEnumMap = {
+  PreScreenStyle.cards: 'cards',
+  PreScreenStyle.list: 'list',
+};
 
 _PreScreenCard _$PreScreenCardFromJson(Map<String, dynamic> json) =>
     _PreScreenCard(
@@ -127,3 +203,12 @@ Map<String, dynamic> _$PreScreenCardToJson(_PreScreenCard instance) =>
       'buttonTitle': instance.buttonTitle,
       'buttonUrl': instance.buttonUrl,
     };
+
+_PreScreenItem _$PreScreenItemFromJson(Map<String, dynamic> json) =>
+    _PreScreenItem(
+      title: json['title'] as String,
+      iconUrl: json['iconURL'] as String,
+    );
+
+Map<String, dynamic> _$PreScreenItemToJson(_PreScreenItem instance) =>
+    <String, dynamic>{'title': instance.title, 'iconURL': instance.iconUrl};

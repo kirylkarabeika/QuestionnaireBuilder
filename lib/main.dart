@@ -3,6 +3,9 @@ import 'editor/editor_controller.dart';
 import 'editor/file_io.dart';
 import 'models/questionnaire.dart';
 import 'widgets/optional_datetime_field.dart';
+import 'widgets/pre_screen_item_editor.dart';
+import 'widgets/carousel_editor.dart';
+import 'widgets/star_rating_editor.dart';
 
 void main() {
   runApp(const App());
@@ -183,7 +186,9 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String?>(
+                        key: ValueKey(qn.showByCondition),
                         initialValue: qn.showByCondition,
+                        isExpanded: true,
                         decoration: const InputDecoration(
                           labelText: 'Show by condition',
                           border: OutlineInputBorder(),
@@ -194,9 +199,22 @@ class _EditorScreenState extends State<EditorScreen> {
                             value: 'try_new_features',
                             child: Text('Try new features section'),
                           ),
+                          DropdownMenuItem(
+                            value: extendedQuestionnaireCondition,
+                            child: Text('Extended questionnaire'),
+                          ),
                         ],
-                        onChanged: (v) => controller.setShowByCondition(v),
+                        onChanged: qn.requiresExtendedQuestionnaire
+                            ? null
+                            : controller.setShowByCondition,
                       ),
+                      if (qn.requiresExtendedQuestionnaire)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Text(
+                            'Extended questionnaire is required for carousel and star rating questions.',
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       TextField(
                         controller: sortOrderCtrl,
@@ -287,6 +305,16 @@ class _EditorScreenState extends State<EditorScreen> {
                             ),
                             child: const Text('Prominent single select'),
                           ),
+                          ElevatedButton(
+                            onPressed: () =>
+                                controller.addQuestion(QuestionType.carousel),
+                            child: const Text('Carousel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () =>
+                                controller.addQuestion(QuestionType.starRating),
+                            child: const Text('Star rating'),
+                          ),
                         ],
                       ),
                     ],
@@ -352,6 +380,23 @@ class _EditorScreenState extends State<EditorScreen> {
     final ps = qn.preScreen!;
     return [
       const SizedBox(height: 16),
+      DropdownButtonFormField<PreScreenStyle>(
+        key: ValueKey(ps.style),
+        initialValue: ps.style,
+        isExpanded: true,
+        decoration: const InputDecoration(
+          labelText: 'Pre-screen style',
+          border: OutlineInputBorder(),
+        ),
+        items: const [
+          DropdownMenuItem(value: PreScreenStyle.cards, child: Text('Cards')),
+          DropdownMenuItem(value: PreScreenStyle.list, child: Text('List')),
+        ],
+        onChanged: (style) {
+          if (style != null) controller.setPreScreenStyle(style);
+        },
+      ),
+      const SizedBox(height: 16),
       TextField(
         decoration: const InputDecoration(
           labelText: 'Pre-screen title',
@@ -371,24 +416,45 @@ class _EditorScreenState extends State<EditorScreen> {
         onChanged: controller.setPreScreenDescription,
       ),
       const SizedBox(height: 16),
-      Text('Cards', style: Theme.of(context).textTheme.titleSmall),
-      for (int i = 0; i < ps.cards.length; i++)
-        PreScreenCardEditor(
-          key: ValueKey('ps_card_$i'),
-          card: ps.cards[i],
-          index: i,
-          onChanged: (c) => controller.updatePreScreenCard(i, c),
-          onDelete: () => controller.removePreScreenCard(i),
+      if (ps.style == PreScreenStyle.cards) ...[
+        Text('Cards', style: Theme.of(context).textTheme.titleSmall),
+        for (int i = 0; i < ps.cards.length; i++)
+          PreScreenCardEditor(
+            key: ValueKey('ps_card_$i'),
+            card: ps.cards[i],
+            index: i,
+            onChanged: (c) => controller.updatePreScreenCard(i, c),
+            onDelete: () => controller.removePreScreenCard(i),
+          ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: controller.addPreScreenCard,
+            icon: const Icon(Icons.add),
+            label: const Text('Add card'),
+          ),
         ),
-      const SizedBox(height: 8),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: OutlinedButton.icon(
-          onPressed: controller.addPreScreenCard,
-          icon: const Icon(Icons.add),
-          label: const Text('Add card'),
+      ] else ...[
+        Text('Items', style: Theme.of(context).textTheme.titleSmall),
+        for (int i = 0; i < ps.items.length; i++)
+          PreScreenItemEditor(
+            key: ValueKey('ps_item_$i'),
+            item: ps.items[i],
+            index: i,
+            onChanged: (item) => controller.updatePreScreenItem(i, item),
+            onDelete: () => controller.removePreScreenItem(i),
+          ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: controller.addPreScreenItem,
+            icon: const Icon(Icons.add),
+            label: const Text('Add item'),
+          ),
         ),
-      ),
+      ],
     ];
   }
 }
@@ -413,11 +479,17 @@ class QuestionCard extends StatefulWidget {
 
 class _QuestionCardState extends State<QuestionCard> {
   late final TextEditingController _titleCtrl;
+  late final TextEditingController _descriptionCtrl;
+  late final TextEditingController _imageUrlCtrl;
 
   @override
   void initState() {
     super.initState();
     _titleCtrl = TextEditingController(text: widget.question.title);
+    _descriptionCtrl = TextEditingController(
+      text: widget.question.description ?? '',
+    );
+    _imageUrlCtrl = TextEditingController(text: widget.question.imageUrl ?? '');
   }
 
   @override
@@ -435,11 +507,29 @@ class _QuestionCardState extends State<QuestionCard> {
         composing: TextRange.empty,
       );
     }
+    final description = widget.question.description ?? '';
+    if (oldWidget.question.description != widget.question.description &&
+        _descriptionCtrl.text != description) {
+      _descriptionCtrl.value = TextEditingValue(
+        text: description,
+        selection: TextSelection.collapsed(offset: description.length),
+      );
+    }
+    final imageUrl = widget.question.imageUrl ?? '';
+    if (oldWidget.question.imageUrl != widget.question.imageUrl &&
+        _imageUrlCtrl.text != imageUrl) {
+      _imageUrlCtrl.value = TextEditingValue(
+        text: imageUrl,
+        selection: TextSelection.collapsed(offset: imageUrl.length),
+      );
+    }
   }
 
   @override
   void dispose() {
     _titleCtrl.dispose();
+    _descriptionCtrl.dispose();
+    _imageUrlCtrl.dispose();
     super.dispose();
   }
 
@@ -482,13 +572,60 @@ class _QuestionCardState extends State<QuestionCard> {
           onChanged: (v) => widget.onChanged(question.copyWith(title: v)),
         ),
         const SizedBox(height: 12),
+        TextField(
+          controller: _descriptionCtrl,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            labelText: 'Question description (optional)',
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (value) => widget.onChanged(
+            question.copyWith(description: value.trim().isEmpty ? null : value),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _imageUrlCtrl,
+          keyboardType: TextInputType.url,
+          decoration: const InputDecoration(
+            labelText: 'Question image URL (optional)',
+            hintText: 'https://…',
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (value) {
+            final url = value.trim();
+            widget.onChanged(
+              question.copyWith(imageUrl: url.isEmpty ? null : url),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('Skippable'),
           value: question.isSkippable,
           onChanged: (v) => widget.onChanged(question.copyWith(isSkippable: v)),
         ),
-        if (question.type == QuestionType.prominentSingleSelect) ...[
+        if (question.type == QuestionType.carousel) ...[
+          const SizedBox(height: 12),
+          CarouselEditor(
+            selectionMode: question.selectionMode,
+            items: question.items,
+            onSelectionModeChanged: (mode) =>
+                widget.onChanged(question.copyWith(selectionMode: mode)),
+            onItemsChanged: (items) =>
+                widget.onChanged(question.copyWith(items: items)),
+          ),
+        ] else if (question.type == QuestionType.starRating) ...[
+          const SizedBox(height: 12),
+          StarRatingEditor(
+            rating:
+                question.starRating ??
+                const StarRating(title: '', description: ''),
+            onChanged: (rating) =>
+                widget.onChanged(question.copyWith(starRating: rating)),
+          ),
+        ] else if (question.type == QuestionType.prominentSingleSelect) ...[
           const SizedBox(height: 12),
           ProminentOptionEditor(
             options: question.options,

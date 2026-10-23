@@ -13,6 +13,11 @@ class EditorController {
   static Questionnaire _newEmpty(String id) =>
       Questionnaire(id: id, title: '', description: '', questions: const []);
 
+  Questionnaire _applyQuestionCompatibility(Questionnaire value) =>
+      value.requiresExtendedQuestionnaire
+      ? value.copyWith(showByCondition: extendedQuestionnaireCondition)
+      : value;
+
   void newQuestionnaire() {
     questionnaire.value = _newEmpty(_uuid.v4());
   }
@@ -45,8 +50,10 @@ class EditorController {
 
   void setShowByCondition(String? value) {
     final v = value?.trim();
-    questionnaire.value = questionnaire.value.copyWith(
-      showByCondition: (v == null || v.isEmpty) ? null : v,
+    questionnaire.value = _applyQuestionCompatibility(
+      questionnaire.value.copyWith(
+        showByCondition: (v == null || v.isEmpty) ? null : v,
+      ),
     );
   }
 
@@ -101,11 +108,15 @@ class EditorController {
       order: questionnaire.value.questions.length,
       title: '',
       type: type,
-      options: (type == QuestionType.textInput) ? const [] : [],
+      starRating: type == QuestionType.starRating
+          ? const StarRating(title: '', description: '')
+          : null,
     );
 
-    questionnaire.value = questionnaire.value.copyWith(
-      questions: [...questionnaire.value.questions, q],
+    questionnaire.value = _applyQuestionCompatibility(
+      questionnaire.value.copyWith(
+        questions: [...questionnaire.value.questions, q],
+      ),
     );
   }
 
@@ -113,7 +124,9 @@ class EditorController {
     final qs = questionnaire.value.questions
         .map((q) => q.id == qId ? updated : q)
         .toList();
-    questionnaire.value = questionnaire.value.copyWith(questions: qs);
+    questionnaire.value = _applyQuestionCompatibility(
+      questionnaire.value.copyWith(questions: qs),
+    );
   }
 
   void removeQuestion(String qId) {
@@ -171,6 +184,14 @@ class EditorController {
     );
   }
 
+  void setPreScreenStyle(PreScreenStyle style) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    questionnaire.value = questionnaire.value.copyWith(
+      preScreen: ps.copyWith(style: style),
+    );
+  }
+
   void addPreScreenCard() {
     final ps = questionnaire.value.preScreen;
     if (ps == null) return;
@@ -199,6 +220,34 @@ class EditorController {
     );
   }
 
+  void addPreScreenItem() {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    const item = PreScreenItem(title: '', iconUrl: '');
+    questionnaire.value = questionnaire.value.copyWith(
+      preScreen: ps.copyWith(items: [...ps.items, item]),
+    );
+  }
+
+  void updatePreScreenItem(int index, PreScreenItem item) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    final items = [...ps.items];
+    items[index] = item;
+    questionnaire.value = questionnaire.value.copyWith(
+      preScreen: ps.copyWith(items: items),
+    );
+  }
+
+  void removePreScreenItem(int index) {
+    final ps = questionnaire.value.preScreen;
+    if (ps == null) return;
+    final items = [...ps.items]..removeAt(index);
+    questionnaire.value = questionnaire.value.copyWith(
+      preScreen: ps.copyWith(items: items),
+    );
+  }
+
   String exportJsonPretty() {
     final map = questionnaire.value.toJson();
     return const JsonEncoder.withIndent('  ').convert(map);
@@ -206,6 +255,8 @@ class EditorController {
 
   void importJson(String jsonString) {
     final decoded = json.decode(jsonString) as Map<String, dynamic>;
-    questionnaire.value = Questionnaire.fromJson(decoded);
+    questionnaire.value = _applyQuestionCompatibility(
+      Questionnaire.fromJson(decoded),
+    );
   }
 }
