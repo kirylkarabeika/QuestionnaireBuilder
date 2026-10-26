@@ -11,7 +11,7 @@ void main() {
   });
 
   tearDown(() {
-    controller.questionnaire.dispose();
+    controller.dispose();
   });
 
   // ── newQuestionnaire ────────────────────────────────────────

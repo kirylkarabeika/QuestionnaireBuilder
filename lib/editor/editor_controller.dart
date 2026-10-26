@@ -4,7 +4,59 @@ import 'package:uuid/uuid.dart';
 import '../models/questionnaire.dart';
 
 class EditorController {
+  EditorController() {
+    _last = questionnaire.value;
+    questionnaire.addListener(_recordChange);
+  }
+
   final _uuid = const Uuid();
+  final _undo = <Questionnaire>[];
+  final _redo = <Questionnaire>[];
+  late Questionnaire _last;
+  bool _replaying = false;
+  final historyRevision = ValueNotifier(0);
+
+  bool get canUndo => _undo.isNotEmpty;
+  bool get canRedo => _redo.isNotEmpty;
+
+  void _recordChange() {
+    if (!_replaying) {
+      _undo.add(_last);
+      if (_undo.length > 100) _undo.removeAt(0);
+      _redo.clear();
+    }
+    _last = questionnaire.value;
+    historyRevision.value++;
+  }
+
+  void undo() {
+    if (!canUndo) return;
+    _redo.add(questionnaire.value);
+    _replaying = true;
+    questionnaire.value = _undo.removeLast();
+    _replaying = false;
+  }
+
+  void redo() {
+    if (!canRedo) return;
+    _undo.add(questionnaire.value);
+    _replaying = true;
+    questionnaire.value = _redo.removeLast();
+    _replaying = false;
+  }
+
+  void resetHistory() {
+    _undo.clear();
+    _redo.clear();
+    _last = questionnaire.value;
+    historyRevision.value++;
+  }
+
+  void dispose() {
+    questionnaire.removeListener(_recordChange);
+    questionnaire.dispose();
+    historyRevision.dispose();
+  }
 
   final ValueNotifier<Questionnaire> questionnaire = ValueNotifier(
     _newEmpty(const Uuid().v4()),
@@ -134,6 +186,32 @@ class EditorController {
     questionnaire.value = questionnaire.value.copyWith(
       questions: _reorderQuestions(qs),
     );
+  }
+
+  String duplicateQuestion(String qId) {
+    final questions = [...questionnaire.value.questions];
+    final index = questions.indexWhere((question) => question.id == qId);
+    final original = questions[index];
+    final id = _uuid.v4();
+    questions.insert(
+      index + 1,
+      original.copyWith(
+        id: id,
+        title: original.title.isEmpty
+            ? 'Untitled question (copy)'
+            : '${original.title} (copy)',
+        options: original.options
+            .map((option) => option.copyWith(id: _uuid.v4()))
+            .toList(),
+        items: original.items
+            .map((item) => item.copyWith(id: _uuid.v4()))
+            .toList(),
+      ),
+    );
+    questionnaire.value = _applyQuestionCompatibility(
+      questionnaire.value.copyWith(questions: _reorderQuestions(questions)),
+    );
+    return id;
   }
 
   void reorderQuestion(int oldIndex, int newIndex) {

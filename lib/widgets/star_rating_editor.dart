@@ -7,10 +7,12 @@ class StarRatingEditor extends StatefulWidget {
     super.key,
     required this.rating,
     required this.onChanged,
+    this.focusField,
   });
 
   final StarRating rating;
   final ValueChanged<StarRating> onChanged;
+  final String? focusField;
 
   @override
   State<StarRatingEditor> createState() => _StarRatingEditorState();
@@ -68,6 +70,7 @@ class _StarRatingEditorState extends State<StarRatingEditor> {
         const SizedBox(height: 12),
         TextField(
           controller: _titleCtrl,
+          autofocus: widget.focusField == 'title',
           decoration: const InputDecoration(
             labelText: 'Rating title',
             border: OutlineInputBorder(),
@@ -78,6 +81,7 @@ class _StarRatingEditorState extends State<StarRatingEditor> {
         const SizedBox(height: 12),
         TextField(
           controller: _countCtrl,
+          autofocus: widget.focusField == 'count',
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             labelText: 'Number of stars',
@@ -97,6 +101,7 @@ class _StarRatingEditorState extends State<StarRatingEditor> {
         const SizedBox(height: 12),
         TextField(
           controller: _descriptionCtrl,
+          autofocus: widget.focusField == 'description',
           maxLines: 3,
           decoration: const InputDecoration(
             labelText: 'Rating description',
