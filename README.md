@@ -40,6 +40,15 @@ Every question type supports an optional `imageUrl` string. Set it using
 thumbnails with change and remove actions. Clearing the field
 saves `null`; older JSON files without `imageUrl` continue to load.
 
+Answer-level images are available only for **Image choice** answers and **Carousel**
+items. Single choice and Multiple choice answers have no image controls.
+Question-level images remain available for every question type.
+
+Optional answer-level descriptions are available for **Image choice**
+(`prominent_single_select`) answers and **Carousel** items. Single choice and
+Multiple choice answers show their answer text without a description.
+Question-level descriptions and star rating descriptions remain available.
+
 ## Carousel and star rating questions
 
 Use **Add question**, then choose **Carousel** or **Star rating**. Both types have the
@@ -143,17 +152,3 @@ The `style` values are `cards` and `list`. Files without `style` use `cards`.
 Icon URLs are JSON strings, using the exact key `iconURL`. Both content arrays
 are saved so switching styles preserves edits; consumers display the array
 selected by `style`.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

@@ -309,7 +309,8 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (option.imageUrl?.isNotEmpty ?? false) ...[
+                                if (question.type.supportsAnswerImages &&
+                                    (option.imageUrl?.isNotEmpty ?? false)) ...[
                                   ContentImage(
                                     url: option.imageUrl,
                                     height: 100,
@@ -340,7 +341,8 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
                                     ),
                                   ],
                                 ),
-                                if (option.description?.isNotEmpty ?? false)
+                                if (question.type.supportsAnswerDescriptions &&
+                                    (option.description?.isNotEmpty ?? false))
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8),
                                     child: Text(option.description!),

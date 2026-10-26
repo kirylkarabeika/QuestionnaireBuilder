@@ -91,6 +91,12 @@ enum QuestionType {
 
   bool get requiresExtendedQuestionnaire =>
       this == carousel || this == starRating;
+
+  bool get supportsAnswerImages =>
+      this == prominentSingleSelect || this == carousel;
+
+  bool get supportsAnswerDescriptions =>
+      this == prominentSingleSelect || this == carousel;
 }
 
 extension QuestionnaireCompatibility on Questionnaire {

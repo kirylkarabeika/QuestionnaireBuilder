@@ -3,8 +3,82 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:labs_questionnaire_creator/editor/editor_location.dart';
 import 'package:labs_questionnaire_creator/models/questionnaire.dart';
 import 'package:labs_questionnaire_creator/widgets/questionnaire_preview.dart';
+import 'package:labs_questionnaire_creator/widgets/editor_fields.dart';
 
 void main() {
+  for (final type in [
+    QuestionType.singleSelect,
+    QuestionType.multiSelect,
+    QuestionType.prominentSingleSelect,
+  ]) {
+    testWidgets(
+      'preview restricts answer images and descriptions: ${type.name}',
+      (tester) async {
+        final questionnaire = Questionnaire(
+          id: 'survey',
+          title: 'Survey',
+          description: '',
+          questions: [
+            Question(
+              id: 'q',
+              title: 'Question',
+              description: 'Question explanation',
+              type: type,
+              imageUrl: 'https://example.com/question.png',
+              options: const [
+                Option(
+                  id: 'answer',
+                  text: 'Answer',
+                  description: 'Answer explanation',
+                  imageUrl: 'https://example.com/answer.png',
+                ),
+              ],
+            ),
+          ],
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: QuestionnairePreview(
+                  questionnaire: questionnaire,
+                  location: const EditorLocation(
+                    ContentKind.question,
+                    questionId: 'q',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        final images = tester
+            .widgetList<ContentImage>(find.byType(ContentImage))
+            .map((image) => image.url)
+            .toList();
+        expect(find.text('Question explanation'), findsOneWidget);
+        expect(
+          find.text('Answer explanation'),
+          type == QuestionType.prominentSingleSelect
+              ? findsOneWidget
+              : findsNothing,
+        );
+        expect(
+          images,
+          type == QuestionType.prominentSingleSelect
+              ? [
+                  'https://example.com/question.png',
+                  'https://example.com/answer.png',
+                ]
+              : ['https://example.com/question.png'],
+        );
+        expect(
+          questionnaire.questions.single.options.single.imageUrl,
+          'https://example.com/answer.png',
+        );
+      },
+    );
+  }
+
   testWidgets(
     'participant flow supports selection, carousel, stars, text skipping, and never modifies content',
     (tester) async {
@@ -35,7 +109,12 @@ void main() {
             selectionMode: CarouselSelectionMode.multiSelect,
             isSkippable: false,
             items: [
-              CarouselItem(id: 'm', title: 'Mountains', imageUrl: ''),
+              CarouselItem(
+                id: 'm',
+                title: 'Mountains',
+                description: 'Route explanation',
+                imageUrl: '',
+              ),
               CarouselItem(id: 'c', title: 'Coast', imageUrl: ''),
             ],
           ),
@@ -82,6 +161,7 @@ void main() {
       await tester.pump();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
+      expect(find.text('Route explanation'), findsOneWidget);
       await tester.tap(find.text('Mountains'));
       await tester.pump();
       await tester.tap(find.byTooltip('Next carousel item'));

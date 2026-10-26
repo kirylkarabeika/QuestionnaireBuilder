@@ -4,6 +4,7 @@ import 'package:labs_questionnaire_creator/editor/editor_controller.dart';
 import 'package:labs_questionnaire_creator/editor/editor_location.dart';
 import 'package:labs_questionnaire_creator/editor/focused_content_editor.dart';
 import 'package:labs_questionnaire_creator/models/questionnaire.dart';
+import 'package:labs_questionnaire_creator/widgets/editor_fields.dart';
 
 class _Harness extends StatefulWidget {
   const _Harness({required this.controller});
@@ -91,6 +92,142 @@ void main() {
       },
     );
   }
+  for (final type in [
+    QuestionType.singleSelect,
+    QuestionType.multiSelect,
+    QuestionType.prominentSingleSelect,
+  ]) {
+    testWidgets(
+      '${type.label} restricts answer content without affecting question content',
+      (tester) async {
+        controller.addQuestion(type);
+        final question = controller.questionnaire.value.questions.single;
+        controller.updateQuestion(
+          question.id,
+          question.copyWith(
+            title: 'Question',
+            description: 'Question explanation',
+            imageUrl: 'https://example.com/question.png',
+            options: const [
+              Option(
+                id: 'answer',
+                text: 'An answer',
+                description: 'Answer explanation',
+                imageUrl: 'https://example.com/answer.png',
+              ),
+            ],
+          ),
+        );
+        await tester.pumpWidget(_Harness(controller: controller));
+        final imageChoice = type == QuestionType.prominentSingleSelect;
+        expect(
+          find.byType(ContentImage),
+          imageChoice ? findsNWidgets(2) : findsOneWidget,
+        );
+        expect(
+          find.text('Answer explanation'),
+          imageChoice ? findsOneWidget : findsNothing,
+        );
+        await reveal(tester, find.text('An answer'));
+        await tester.tap(find.text('An answer'));
+        await tester.pumpAndSettle();
+        expect(
+          find.byType(OptionalDescriptionField),
+          imageChoice ? findsOneWidget : findsNothing,
+        );
+        expect(find.text('Add description'), findsNothing);
+        expect(
+          find.text('Answer explanation'),
+          imageChoice ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byType(ImageField),
+          imageChoice ? findsOneWidget : findsNothing,
+        );
+        if (!imageChoice) {
+          expect(find.text('Remove answer image'), findsNothing);
+          expect(
+            controller
+                .questionnaire
+                .value
+                .questions
+                .single
+                .options
+                .single
+                .imageUrl,
+            'https://example.com/answer.png',
+          );
+          expect(find.text('Add image (optional)'), findsNothing);
+        } else {
+          await tester.enterText(
+            field('Description (optional)'),
+            'Updated answer explanation',
+          );
+          await tester.pump();
+          expect(
+            controller
+                .questionnaire
+                .value
+                .questions
+                .single
+                .options
+                .single
+                .description,
+            'Updated answer explanation',
+          );
+          await tester.enterText(field('Description (optional)'), '');
+          await tester.pump();
+          expect(
+            controller
+                .questionnaire
+                .value
+                .questions
+                .single
+                .options
+                .single
+                .description,
+            isNull,
+          );
+          await tester.enterText(
+            field('Description (optional)'),
+            'Answer explanation',
+          );
+          await tester.pump();
+          expect(find.byTooltip('Change image'), findsOneWidget);
+          expect(
+            controller
+                .questionnaire
+                .value
+                .questions
+                .single
+                .options
+                .single
+                .imageUrl,
+            'https://example.com/answer.png',
+          );
+        }
+        expect(
+          controller.questionnaire.value.questions.single.imageUrl,
+          'https://example.com/question.png',
+        );
+        expect(
+          controller.questionnaire.value.questions.single.description,
+          'Question explanation',
+        );
+        expect(
+          controller
+              .questionnaire
+              .value
+              .questions
+              .single
+              .options
+              .single
+              .description,
+          'Answer explanation',
+        );
+      },
+    );
+  }
   testWidgets('carousel descriptions and images live in their own editor', (
     tester,
   ) async {
@@ -104,7 +241,7 @@ void main() {
     await tester.enterText(field('Item title'), 'Mountains');
     await tester.pump();
     await tester.enterText(
-      field('Item description'),
+      field('Item description (optional)'),
       'Scenic routes\nWinding roads',
     );
     await tester.pump();
@@ -124,8 +261,17 @@ void main() {
     await tester.tap(find.text('Mountains'));
     await tester.pumpAndSettle();
     expect(
-      tester.widget<TextField>(field('Item description')).controller!.text,
+      tester
+          .widget<TextField>(field('Item description (optional)'))
+          .controller!
+          .text,
       'Scenic routes\nWinding roads',
+    );
+    await tester.enterText(field('Item description (optional)'), '');
+    await tester.pump();
+    expect(
+      controller.questionnaire.value.questions.single.items.single.description,
+      isEmpty,
     );
     await tester.tap(find.byTooltip('Delete carousel item'));
     await tester.pumpAndSettle();

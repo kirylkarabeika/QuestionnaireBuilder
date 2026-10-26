@@ -152,7 +152,7 @@ class FocusedContentEditor extends StatelessWidget {
             onChanged: (text) => updateItem(item.copyWith(title: text)),
           ),
           ContentField(
-            label: 'Item description',
+            label: 'Item description (optional)',
             value: item.description,
             lines: 3,
             autofocus: focus('description'),
@@ -212,17 +212,19 @@ class FocusedContentEditor extends StatelessWidget {
             autofocus: focus('title'),
             onChanged: (text) => updateOption(option.copyWith(text: text)),
           ),
-          OptionalDescriptionField(
-            value: option.description,
-            autofocus: focus('description'),
-            onChanged: (text) =>
-                updateOption(option.copyWith(description: text)),
-          ),
-          ImageField(
-            value: option.imageUrl,
-            autofocus: focus('image'),
-            onChanged: (url) => updateOption(option.copyWith(imageUrl: url)),
-          ),
+          if (question.type.supportsAnswerDescriptions)
+            OptionalDescriptionField(
+              value: option.description,
+              autofocus: focus('description'),
+              onChanged: (text) =>
+                  updateOption(option.copyWith(description: text)),
+            ),
+          if (question.type.supportsAnswerImages)
+            ImageField(
+              value: option.imageUrl,
+              autofocus: focus('image'),
+              onChanged: (url) => updateOption(option.copyWith(imageUrl: url)),
+            ),
         ],
         subtitle:
             '$contextLabel / Answer ${question.options.indexOf(option) + 1}',
@@ -338,8 +340,12 @@ class FocusedContentEditor extends StatelessWidget {
               title: question.options[i].text.isEmpty
                   ? 'Untitled answer ${i + 1}'
                   : question.options[i].text,
-              description: question.options[i].description,
-              imageUrl: question.options[i].imageUrl,
+              description: question.type.supportsAnswerDescriptions
+                  ? question.options[i].description
+                  : null,
+              imageUrl: question.type.supportsAnswerImages
+                  ? question.options[i].imageUrl
+                  : null,
               onTap: () => onNavigate(
                 EditorLocation(
                   ContentKind.option,

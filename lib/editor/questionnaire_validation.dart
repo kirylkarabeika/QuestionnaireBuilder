@@ -127,11 +127,13 @@ List<ContentIssue> validateQuestionnaire(Questionnaire questionnaire) {
           'Add text for answer ${j + 1} in $label.',
           at(ContentKind.option, 'title', itemId: option.id),
         );
-        url(
-          option.imageUrl,
-          'answer ${j + 1} in $label',
-          at(ContentKind.option, 'image', itemId: option.id),
-        );
+        if (question.type.supportsAnswerImages) {
+          url(
+            option.imageUrl,
+            'answer ${j + 1} in $label',
+            at(ContentKind.option, 'image', itemId: option.id),
+          );
+        }
       }
     }
   }

@@ -4,6 +4,45 @@ import 'package:labs_questionnaire_creator/editor/questionnaire_validation.dart'
 import 'package:labs_questionnaire_creator/models/questionnaire.dart';
 
 void main() {
+  for (final type in [
+    QuestionType.singleSelect,
+    QuestionType.multiSelect,
+    QuestionType.prominentSingleSelect,
+  ]) {
+    test('validates only supported answer image URLs for ${type.name}', () {
+      final questionnaire = Questionnaire(
+        id: 'survey',
+        title: 'Survey',
+        description: '',
+        questions: [
+          Question(
+            id: 'q',
+            title: 'Question',
+            type: type,
+            imageUrl: 'https://example.com/question.png',
+            options: const [
+              Option(
+                id: 'answer',
+                text: 'Answer',
+                imageUrl: 'not-an-image-url',
+              ),
+            ],
+          ),
+        ],
+      );
+      final issues = validateQuestionnaire(questionnaire);
+      if (type == QuestionType.prominentSingleSelect) {
+        expect(issues, hasLength(1));
+        expect(issues.single.message, contains('Use a full http or https URL'));
+        expect(issues.single.location.kind, ContentKind.option);
+        expect(issues.single.location.itemId, 'answer');
+        expect(issues.single.location.field, 'image');
+      } else {
+        expect(issues, isEmpty);
+      }
+    });
+  }
+
   test(
     'points missing carousel content at the exact nested item and field',
     () {
