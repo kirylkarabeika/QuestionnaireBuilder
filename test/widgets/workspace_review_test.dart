@@ -21,7 +21,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final controller = EditorController()
         ..setTitle('Routes survey')
-        ..addQuestion(QuestionType.carousel);
+        ..addQuestion(QuestionType.carouselSingleSelect);
       final question = controller.questionnaire.value.questions.single;
       controller.updateQuestion(
         question.id,
@@ -144,8 +144,7 @@ void main() {
                 id: 'routes',
                 title: 'Where do you like to drive?',
                 description: 'Choose all the places you enjoy.',
-                type: QuestionType.carousel,
-                selectionMode: CarouselSelectionMode.multiSelect,
+                type: QuestionType.carouselMultiSelect,
                 items: [
                   CarouselItem(
                     id: 'mountains',

@@ -347,7 +347,7 @@ $PreScreenCopyWith<$Res>? get preScreen {
 /// @nodoc
 mixin _$Question {
 
- String get id; int get order; String get title; String? get description; String? get imageUrl; QuestionType get type; bool get isSkippable; List<Option> get options; CarouselSelectionMode get selectionMode; List<CarouselItem> get items; StarRating? get starRating;
+ String get id; int get order; String get title; String? get description; String? get imageUrl; QuestionType get type; bool get isSkippable; List<Option> get options; List<CarouselItem> get items; StarRating? get starRating;
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -360,16 +360,16 @@ $QuestionCopyWith<Question> get copyWith => _$QuestionCopyWithImpl<Question>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other.options, options)&&(identical(other.selectionMode, selectionMode) || other.selectionMode == selectionMode)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.starRating, starRating) || other.starRating == starRating));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other.options, options)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.starRating, starRating) || other.starRating == starRating));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl,type,isSkippable,const DeepCollectionEquality().hash(options),selectionMode,const DeepCollectionEquality().hash(items),starRating);
+int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl,type,isSkippable,const DeepCollectionEquality().hash(options),const DeepCollectionEquality().hash(items),starRating);
 
 @override
 String toString() {
-  return 'Question(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl, type: $type, isSkippable: $isSkippable, options: $options, selectionMode: $selectionMode, items: $items, starRating: $starRating)';
+  return 'Question(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl, type: $type, isSkippable: $isSkippable, options: $options, items: $items, starRating: $starRating)';
 }
 
 
@@ -380,7 +380,7 @@ abstract mixin class $QuestionCopyWith<$Res>  {
   factory $QuestionCopyWith(Question value, $Res Function(Question) _then) = _$QuestionCopyWithImpl;
 @useResult
 $Res call({
- String id, int order, String title, String? description, String? imageUrl, QuestionType type, bool isSkippable, List<Option> options, CarouselSelectionMode selectionMode, List<CarouselItem> items, StarRating? starRating
+ String id, int order, String title, String? description, String? imageUrl, QuestionType type, bool isSkippable, List<Option> options, List<CarouselItem> items, StarRating? starRating
 });
 
 
@@ -397,7 +397,7 @@ class _$QuestionCopyWithImpl<$Res>
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = freezed,Object? imageUrl = freezed,Object? type = null,Object? isSkippable = null,Object? options = null,Object? selectionMode = null,Object? items = null,Object? starRating = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = freezed,Object? imageUrl = freezed,Object? type = null,Object? isSkippable = null,Object? options = null,Object? items = null,Object? starRating = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
@@ -407,8 +407,7 @@ as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: 
 as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as QuestionType,isSkippable: null == isSkippable ? _self.isSkippable : isSkippable // ignore: cast_nullable_to_non_nullable
 as bool,options: null == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
-as List<Option>,selectionMode: null == selectionMode ? _self.selectionMode : selectionMode // ignore: cast_nullable_to_non_nullable
-as CarouselSelectionMode,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<Option>,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<CarouselItem>,starRating: freezed == starRating ? _self.starRating : starRating // ignore: cast_nullable_to_non_nullable
 as StarRating?,
   ));
@@ -507,10 +506,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  CarouselSelectionMode selectionMode,  List<CarouselItem> items,  StarRating? starRating)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  List<CarouselItem> items,  StarRating? starRating)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Question() when $default != null:
-return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.selectionMode,_that.items,_that.starRating);case _:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.items,_that.starRating);case _:
   return orElse();
 
 }
@@ -528,10 +527,10 @@ return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  CarouselSelectionMode selectionMode,  List<CarouselItem> items,  StarRating? starRating)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  List<CarouselItem> items,  StarRating? starRating)  $default,) {final _that = this;
 switch (_that) {
 case _Question():
-return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.selectionMode,_that.items,_that.starRating);case _:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.items,_that.starRating);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -548,10 +547,10 @@ return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  CarouselSelectionMode selectionMode,  List<CarouselItem> items,  StarRating? starRating)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int order,  String title,  String? description,  String? imageUrl,  QuestionType type,  bool isSkippable,  List<Option> options,  List<CarouselItem> items,  StarRating? starRating)?  $default,) {final _that = this;
 switch (_that) {
 case _Question() when $default != null:
-return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.selectionMode,_that.items,_that.starRating);case _:
+return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUrl,_that.type,_that.isSkippable,_that.options,_that.items,_that.starRating);case _:
   return null;
 
 }
@@ -563,7 +562,7 @@ return $default(_that.id,_that.order,_that.title,_that.description,_that.imageUr
 @JsonSerializable()
 
 class _Question implements Question {
-  const _Question({required this.id, this.order = 0, required this.title, this.description, this.imageUrl, required this.type, this.isSkippable = true, final  List<Option> options = const <Option>[], this.selectionMode = CarouselSelectionMode.singleSelect, final  List<CarouselItem> items = const <CarouselItem>[], this.starRating}): _options = options,_items = items;
+  const _Question({required this.id, this.order = 0, required this.title, this.description, this.imageUrl, required this.type, this.isSkippable = true, final  List<Option> options = const <Option>[], final  List<CarouselItem> items = const <CarouselItem>[], this.starRating}): _options = options,_items = items;
   factory _Question.fromJson(Map<String, dynamic> json) => _$QuestionFromJson(json);
 
 @override final  String id;
@@ -580,7 +579,6 @@ class _Question implements Question {
   return EqualUnmodifiableListView(_options);
 }
 
-@override@JsonKey() final  CarouselSelectionMode selectionMode;
  final  List<CarouselItem> _items;
 @override@JsonKey() List<CarouselItem> get items {
   if (_items is EqualUnmodifiableListView) return _items;
@@ -603,16 +601,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other._options, _options)&&(identical(other.selectionMode, selectionMode) || other.selectionMode == selectionMode)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.starRating, starRating) || other.starRating == starRating));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Question&&(identical(other.id, id) || other.id == id)&&(identical(other.order, order) || other.order == order)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.isSkippable, isSkippable) || other.isSkippable == isSkippable)&&const DeepCollectionEquality().equals(other._options, _options)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.starRating, starRating) || other.starRating == starRating));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl,type,isSkippable,const DeepCollectionEquality().hash(_options),selectionMode,const DeepCollectionEquality().hash(_items),starRating);
+int get hashCode => Object.hash(runtimeType,id,order,title,description,imageUrl,type,isSkippable,const DeepCollectionEquality().hash(_options),const DeepCollectionEquality().hash(_items),starRating);
 
 @override
 String toString() {
-  return 'Question(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl, type: $type, isSkippable: $isSkippable, options: $options, selectionMode: $selectionMode, items: $items, starRating: $starRating)';
+  return 'Question(id: $id, order: $order, title: $title, description: $description, imageUrl: $imageUrl, type: $type, isSkippable: $isSkippable, options: $options, items: $items, starRating: $starRating)';
 }
 
 
@@ -623,7 +621,7 @@ abstract mixin class _$QuestionCopyWith<$Res> implements $QuestionCopyWith<$Res>
   factory _$QuestionCopyWith(_Question value, $Res Function(_Question) _then) = __$QuestionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int order, String title, String? description, String? imageUrl, QuestionType type, bool isSkippable, List<Option> options, CarouselSelectionMode selectionMode, List<CarouselItem> items, StarRating? starRating
+ String id, int order, String title, String? description, String? imageUrl, QuestionType type, bool isSkippable, List<Option> options, List<CarouselItem> items, StarRating? starRating
 });
 
 
@@ -640,7 +638,7 @@ class __$QuestionCopyWithImpl<$Res>
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = freezed,Object? imageUrl = freezed,Object? type = null,Object? isSkippable = null,Object? options = null,Object? selectionMode = null,Object? items = null,Object? starRating = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? order = null,Object? title = null,Object? description = freezed,Object? imageUrl = freezed,Object? type = null,Object? isSkippable = null,Object? options = null,Object? items = null,Object? starRating = freezed,}) {
   return _then(_Question(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
@@ -650,8 +648,7 @@ as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: 
 as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as QuestionType,isSkippable: null == isSkippable ? _self.isSkippable : isSkippable // ignore: cast_nullable_to_non_nullable
 as bool,options: null == options ? _self._options : options // ignore: cast_nullable_to_non_nullable
-as List<Option>,selectionMode: null == selectionMode ? _self.selectionMode : selectionMode // ignore: cast_nullable_to_non_nullable
-as CarouselSelectionMode,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<Option>,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<CarouselItem>,starRating: freezed == starRating ? _self.starRating : starRating // ignore: cast_nullable_to_non_nullable
 as StarRating?,
   ));

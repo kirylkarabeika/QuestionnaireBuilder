@@ -272,7 +272,7 @@ class FocusedContentEditor extends StatelessWidget {
           onChanged: (url) => update(question.copyWith(imageUrl: url)),
         ),
         const Divider(height: 36),
-        if (question.type == QuestionType.carousel) ...[
+        if (question.type.isCarousel) ...[
           Text(
             'Carousel items',
             style: Theme.of(context).textTheme.titleMedium,
@@ -388,27 +388,6 @@ class FocusedContentEditor extends StatelessWidget {
               onChanged: (value) =>
                   update(question.copyWith(isSkippable: value)),
             ),
-            if (question.type == QuestionType.carousel)
-              DropdownButtonFormField<CarouselSelectionMode>(
-                key: ValueKey(question.selectionMode),
-                initialValue: question.selectionMode,
-                isExpanded: true,
-                decoration: const InputDecoration(labelText: 'Selection mode'),
-                items: const [
-                  DropdownMenuItem(
-                    value: CarouselSelectionMode.singleSelect,
-                    child: Text('Single choice'),
-                  ),
-                  DropdownMenuItem(
-                    value: CarouselSelectionMode.multiSelect,
-                    child: Text('Multiple choice'),
-                  ),
-                ],
-                onChanged: (mode) {
-                  if (mode != null)
-                    update(question.copyWith(selectionMode: mode));
-                },
-              ),
             const SizedBox(height: 12),
           ],
         ),

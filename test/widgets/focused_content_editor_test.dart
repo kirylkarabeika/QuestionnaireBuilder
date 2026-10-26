@@ -82,6 +82,7 @@ void main() {
         await reveal(tester, find.text('Answer settings'));
         await tester.tap(find.text('Answer settings'));
         await tester.pumpAndSettle();
+        expect(find.text('Selection mode'), findsNothing);
         await reveal(tester, find.text('Allow participants to skip'));
         await tester.tap(find.text('Allow participants to skip'));
         await tester.pump();
@@ -231,7 +232,7 @@ void main() {
   testWidgets('carousel descriptions and images live in their own editor', (
     tester,
   ) async {
-    controller.addQuestion(QuestionType.carousel);
+    controller.addQuestion(QuestionType.carouselSingleSelect);
     await tester.pumpWidget(_Harness(controller: controller));
     await reveal(tester, find.text('Add carousel item'));
     await tester.tap(find.text('Add carousel item'));

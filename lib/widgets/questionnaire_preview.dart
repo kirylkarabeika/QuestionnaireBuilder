@@ -46,14 +46,11 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
       written.removeWhere((key, _) => !ids.contains(key));
       ratings.removeWhere((key, _) => !ids.contains(key));
       for (final q in widget.questionnaire.questions) {
-        final valid = q.type == QuestionType.carousel
+        final valid = q.type.isCarousel
             ? q.items.map((i) => i.id).toSet()
             : q.options.map((o) => o.id).toSet();
         answers[q.id]?.removeWhere((id) => !valid.contains(id));
-        final multiple =
-            q.type == QuestionType.multiSelect ||
-            q.type == QuestionType.carousel &&
-                q.selectionMode == CarouselSelectionMode.multiSelect;
+        final multiple = q.type.allowsMultipleAnswers;
         if (!multiple && (answers[q.id]?.length ?? 0) > 1) {
           answers[q.id] = {answers[q.id]!.first};
         }
@@ -65,12 +62,12 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
     }
   }
 
-  void select(Question question, String id, bool multiple) => setState(() {
+  void select(Question question, String id) => setState(() {
     final selection = answers.putIfAbsent(question.id, () => {});
     if (selection.contains(id)) {
       selection.remove(id);
     } else {
-      if (!multiple) selection.clear();
+      if (!question.type.allowsMultipleAnswers) selection.clear();
       selection.add(id);
     }
   });
@@ -228,18 +225,13 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
                       child: Text(question.description!),
                     ),
                   const SizedBox(height: 20),
-                  if (question.type == QuestionType.carousel)
+                  if (question.type.isCarousel)
                     CarouselPreview(
                       key: ValueKey(question.id),
                       question: question,
                       focusedItemId: widget.location.itemId,
                       selected: answers[question.id] ?? {},
-                      onSelect: (id) => select(
-                        question,
-                        id,
-                        question.selectionMode ==
-                            CarouselSelectionMode.multiSelect,
-                      ),
+                      onSelect: (id) => select(question, id),
                     ),
                   if (question.type == QuestionType.starRating) ...[
                     Text(
@@ -299,11 +291,7 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
                         margin: const EdgeInsets.only(bottom: 10),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
-                          onTap: () => select(
-                            question,
-                            option.id,
-                            question.type == QuestionType.multiSelect,
-                          ),
+                          onTap: () => select(question, option.id),
                           child: Padding(
                             padding: const EdgeInsets.all(12),
                             child: Column(
@@ -507,7 +495,7 @@ class _CarouselPreviewState extends State<CarouselPreview> {
     return Column(
       children: [
         Text(
-          widget.question.selectionMode == CarouselSelectionMode.multiSelect
+          widget.question.type.allowsMultipleAnswers
               ? 'Select all that apply'
               : 'Select one answer',
           style: Theme.of(context).textTheme.bodySmall,

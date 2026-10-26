@@ -70,7 +70,7 @@ List<ContentIssue> validateQuestionnaire(Questionnaire questionnaire) {
       at(ContentKind.question, 'title'),
     );
     url(question.imageUrl, label, at(ContentKind.question, 'image'));
-    if (question.type == QuestionType.carousel) {
+    if (question.type.isCarousel) {
       if (question.items.isEmpty)
         issues.add(
           ContentIssue(

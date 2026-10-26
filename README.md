@@ -51,14 +51,16 @@ Question-level descriptions and star rating descriptions remain available.
 
 ## Carousel and star rating questions
 
-Use **Add question**, then choose **Carousel** or **Star rating**. Both types have the
+Use **Add question**, then choose **Carousel (single choice)**,
+**Carousel (multiple choice)**, or **Star rating**. These types have the
 same question title, optional description and image URL, and skippable setting
 as the existing question types.
 
-Carousels use `type: "carousel"`, a `selectionMode` of `single_select` (default)
-or `multi_select`, and an `items` array. Each item has a stable `id`, zero-based
+Carousels use `type: "carousel_single_select"` or `type: "carousel_multi_select"`
+and an `items` array. The type determines whether participants choose one or
+multiple answers. Each item has a stable `id`, zero-based
 `order`, `title`, `description`, and `imageUrl`. Item descriptions support multiple
-lines and default to an empty string when omitted in older JSON. Use **Add carousel
+lines and default to an empty string when omitted. Use **Add carousel
 item** to add items; deleting one renumbers the remaining items without changing
 their IDs.
 
@@ -79,9 +81,8 @@ The rating description is separate from the optional question description.
       "title": "Choose your favourites",
       "description": "Select all that apply",
       "imageUrl": null,
-      "type": "carousel",
+      "type": "carousel_multi_select",
       "isSkippable": true,
-      "selectionMode": "multi_select",
       "items": [
         {
           "id": "mountains",

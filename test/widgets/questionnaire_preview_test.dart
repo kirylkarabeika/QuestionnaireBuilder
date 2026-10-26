@@ -7,6 +7,73 @@ import 'package:labs_questionnaire_creator/widgets/editor_fields.dart';
 
 void main() {
   for (final type in [
+    QuestionType.carouselSingleSelect,
+    QuestionType.carouselMultiSelect,
+  ]) {
+    testWidgets(
+      '${type.name} derives single or multiple selection from the type',
+      (tester) async {
+        tester.view.physicalSize = const Size(500, 1400);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final questionnaire = Questionnaire(
+          id: 'survey',
+          title: 'Survey',
+          description: '',
+          questions: [
+            Question(
+              id: 'q',
+              title: 'Routes',
+              type: type,
+              isSkippable: false,
+              items: const [
+                CarouselItem(id: 'a', title: 'Mountains', imageUrl: ''),
+                CarouselItem(id: 'b', title: 'Coast', imageUrl: ''),
+              ],
+            ),
+          ],
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: QuestionnairePreview(
+                  questionnaire: questionnaire,
+                  location: const EditorLocation(
+                    ContentKind.question,
+                    questionId: 'q',
+                  ),
+                  walkthrough: true,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Mountains'));
+        await tester.pump();
+        await tester.tap(find.byTooltip('Next carousel item'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Coast'));
+        await tester.pump();
+        expect(
+          tester.widget<CarouselPreview>(find.byType(CarouselPreview)).selected,
+          type == QuestionType.carouselMultiSelect ? {'a', 'b'} : {'b'},
+        );
+        await tester.tap(find.text('Coast'));
+        await tester.pump();
+        final finish = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Finish'),
+        );
+        expect(
+          finish.onPressed,
+          type == QuestionType.carouselMultiSelect ? isNotNull : isNull,
+        );
+      },
+    );
+  }
+
+  for (final type in [
     QuestionType.singleSelect,
     QuestionType.multiSelect,
     QuestionType.prominentSingleSelect,
@@ -105,8 +172,7 @@ void main() {
           Question(
             id: 'carousel',
             title: 'Choose routes',
-            type: QuestionType.carousel,
-            selectionMode: CarouselSelectionMode.multiSelect,
+            type: QuestionType.carouselMultiSelect,
             isSkippable: false,
             items: [
               CarouselItem(

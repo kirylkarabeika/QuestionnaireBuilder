@@ -284,7 +284,11 @@ void main() {
   // ── updateQuestion ──────────────────────────────────────────
 
   group('extended questions', () {
-    for (final type in [QuestionType.carousel, QuestionType.starRating]) {
+    for (final type in [
+      QuestionType.carouselSingleSelect,
+      QuestionType.carouselMultiSelect,
+      QuestionType.starRating,
+    ]) {
       test('adding ${type.name} requires the extended condition', () {
         controller.setShowByCondition('try_new_features');
         controller.addQuestion(type);
@@ -296,8 +300,14 @@ void main() {
         final question = controller.questionnaire.value.questions.single;
         expect(question.type, type);
         expect(question.isSkippable, isTrue);
-        if (type == QuestionType.carousel) {
-          expect(question.selectionMode, CarouselSelectionMode.singleSelect);
+        expect(question.toJson().containsKey('selectionMode'), isFalse);
+        if (type.isCarousel) {
+          expect(
+            question.toJson()['type'],
+            type == QuestionType.carouselSingleSelect
+                ? 'carousel_single_select'
+                : 'carousel_multi_select',
+          );
           expect(question.items, isEmpty);
         } else {
           expect(
@@ -323,8 +333,8 @@ void main() {
       });
     }
 
-    for (final mode in ['single_select', 'multi_select']) {
-      test('round-trips a $mode carousel and applies its condition', () {
+    for (final type in ['carousel_single_select', 'carousel_multi_select']) {
+      test('round-trips $type and applies its condition', () {
         controller.importJson(
           jsonEncode({
             'id': 'extended',
@@ -337,9 +347,8 @@ void main() {
                 'title': 'Choose your favourites',
                 'description': 'Choose from these images',
                 'imageUrl': 'https://example.com/question.png',
-                'type': 'carousel',
+                'type': type,
                 'isSkippable': false,
-                'selectionMode': mode,
                 'items': [
                   {
                     'id': 'a',
@@ -362,10 +371,10 @@ void main() {
         final questionnaire = controller.questionnaire.value;
         final question = questionnaire.questions.single;
         expect(
-          question.selectionMode,
-          mode == 'single_select'
-              ? CarouselSelectionMode.singleSelect
-              : CarouselSelectionMode.multiSelect,
+          question.type,
+          type == 'carousel_single_select'
+              ? QuestionType.carouselSingleSelect
+              : QuestionType.carouselMultiSelect,
         );
         expect(question.items.map((item) => item.title), ['First', 'Second']);
         expect(question.items.first.description, isEmpty);
@@ -376,8 +385,11 @@ void main() {
         expect(question.isSkippable, isFalse);
         final exported = jsonDecode(controller.exportJsonPretty());
         expect(exported['showByCondition'], extendedQuestionnaireCondition);
-        expect(exported['questions'][0]['type'], 'carousel');
-        expect(exported['questions'][0]['selectionMode'], mode);
+        expect(exported['questions'][0]['type'], type);
+        expect(
+          (exported['questions'][0] as Map).containsKey('selectionMode'),
+          isFalse,
+        );
         expect(exported['questions'][0]['items'][1], {
           'id': 'b',
           'order': 1,
@@ -539,6 +551,12 @@ void main() {
           description,
         );
         expect(jsonDecode(exported)['questions'][0]['imageUrl'], imageUrl);
+        expect(
+          (jsonDecode(exported)['questions'][0] as Map).containsKey(
+            'selectionMode',
+          ),
+          isFalse,
+        );
         controller.newQuestionnaire();
         controller.importJson(exported);
         final restored = controller.questionnaire.value.questions.single;

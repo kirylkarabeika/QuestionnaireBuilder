@@ -42,7 +42,8 @@ extension QuestionTypePresentation on QuestionType {
     QuestionType.multiSelect => 'Multiple choice',
     QuestionType.textInput => 'Written answer',
     QuestionType.prominentSingleSelect => 'Image choice',
-    QuestionType.carousel => 'Carousel',
+    QuestionType.carouselSingleSelect => 'Carousel (single choice)',
+    QuestionType.carouselMultiSelect => 'Carousel (multiple choice)',
     QuestionType.starRating => 'Star rating',
   };
   String get help => switch (this) {
@@ -51,7 +52,9 @@ extension QuestionTypePresentation on QuestionType {
     QuestionType.textInput => 'Write a free-text answer.',
     QuestionType.prominentSingleSelect =>
       'Choose one answer with an image and description.',
-    QuestionType.carousel => 'Browse image cards and choose one or several.',
+    QuestionType.carouselSingleSelect => 'Browse image cards and choose one.',
+    QuestionType.carouselMultiSelect =>
+      'Browse image cards and choose several.',
     QuestionType.starRating => 'Rate an experience with stars.',
   };
 }

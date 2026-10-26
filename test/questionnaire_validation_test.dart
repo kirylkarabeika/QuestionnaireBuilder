@@ -55,7 +55,7 @@ void main() {
             Question(
               id: 'q',
               title: 'Routes',
-              type: QuestionType.carousel,
+              type: QuestionType.carouselSingleSelect,
               items: [
                 CarouselItem(id: 'item', title: 'Mountains', imageUrl: ''),
               ],

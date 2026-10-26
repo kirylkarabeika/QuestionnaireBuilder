@@ -61,12 +61,6 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
           ?.map((e) => Option.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <Option>[],
-  selectionMode:
-      $enumDecodeNullable(
-        _$CarouselSelectionModeEnumMap,
-        json['selectionMode'],
-      ) ??
-      CarouselSelectionMode.singleSelect,
   items:
       (json['items'] as List<dynamic>?)
           ?.map((e) => CarouselItem.fromJson(e as Map<String, dynamic>))
@@ -86,7 +80,6 @@ Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
   'type': _$QuestionTypeEnumMap[instance.type]!,
   'isSkippable': instance.isSkippable,
   'options': instance.options,
-  'selectionMode': _$CarouselSelectionModeEnumMap[instance.selectionMode]!,
   'items': instance.items,
   'starRating': instance.starRating,
 };
@@ -96,13 +89,9 @@ const _$QuestionTypeEnumMap = {
   QuestionType.multiSelect: 'multi_select',
   QuestionType.textInput: 'text_input',
   QuestionType.prominentSingleSelect: 'prominent_single_select',
-  QuestionType.carousel: 'carousel',
+  QuestionType.carouselSingleSelect: 'carousel_single_select',
+  QuestionType.carouselMultiSelect: 'carousel_multi_select',
   QuestionType.starRating: 'star_rating',
-};
-
-const _$CarouselSelectionModeEnumMap = {
-  CarouselSelectionMode.singleSelect: 'single_select',
-  CarouselSelectionMode.multiSelect: 'multi_select',
 };
 
 _Option _$OptionFromJson(Map<String, dynamic> json) => _Option(

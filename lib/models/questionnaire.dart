@@ -52,8 +52,6 @@ abstract class Question with _$Question {
     required QuestionType type,
     @Default(true) bool isSkippable,
     @Default(<Option>[]) List<Option> options,
-    @Default(CarouselSelectionMode.singleSelect)
-    CarouselSelectionMode selectionMode,
     @Default(<CarouselItem>[]) List<CarouselItem> items,
     StarRating? starRating,
   }) = _Question;
@@ -84,31 +82,30 @@ enum QuestionType {
   textInput,
   @JsonValue('prominent_single_select')
   prominentSingleSelect,
-  @JsonValue('carousel')
-  carousel,
+  @JsonValue('carousel_single_select')
+  carouselSingleSelect,
+  @JsonValue('carousel_multi_select')
+  carouselMultiSelect,
   @JsonValue('star_rating')
   starRating;
 
-  bool get requiresExtendedQuestionnaire =>
-      this == carousel || this == starRating;
+  bool get isCarousel =>
+      this == carouselSingleSelect || this == carouselMultiSelect;
 
-  bool get supportsAnswerImages =>
-      this == prominentSingleSelect || this == carousel;
+  bool get allowsMultipleAnswers =>
+      this == multiSelect || this == carouselMultiSelect;
+
+  bool get requiresExtendedQuestionnaire => isCarousel || this == starRating;
+
+  bool get supportsAnswerImages => this == prominentSingleSelect || isCarousel;
 
   bool get supportsAnswerDescriptions =>
-      this == prominentSingleSelect || this == carousel;
+      this == prominentSingleSelect || isCarousel;
 }
 
 extension QuestionnaireCompatibility on Questionnaire {
   bool get requiresExtendedQuestionnaire =>
       questions.any((question) => question.type.requiresExtendedQuestionnaire);
-}
-
-enum CarouselSelectionMode {
-  @JsonValue('single_select')
-  singleSelect,
-  @JsonValue('multi_select')
-  multiSelect,
 }
 
 @freezed

@@ -22,11 +22,11 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Add question').first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Carousel'));
+      await tester.tap(find.text('Carousel (single choice)'));
       await tester.pumpAndSettle();
       expect(
         controller.questionnaire.value.questions.single.type,
-        QuestionType.carousel,
+        QuestionType.carouselSingleSelect,
       );
       expect(
         controller.questionnaire.value.showByCondition,
@@ -49,6 +49,14 @@ void main() {
       );
       await tester.tap(find.text('Add question').first);
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Carousel (multiple choice)'));
+      await tester.pumpAndSettle();
+      expect(controller.questionnaire.value.questions.map((q) => q.type), [
+        QuestionType.carouselSingleSelect,
+        QuestionType.carouselMultiSelect,
+      ]);
+      await tester.tap(find.text('Add question').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Star rating'));
       await tester.pumpAndSettle();
       expect(
@@ -57,13 +65,13 @@ void main() {
       );
       await tester.tap(find.byTooltip('Duplicate question'));
       await tester.pumpAndSettle();
-      expect(controller.questionnaire.value.questions, hasLength(3));
+      expect(controller.questionnaire.value.questions, hasLength(4));
       await tester.tap(find.byTooltip('Delete question'));
       await tester.pumpAndSettle();
-      expect(controller.questionnaire.value.questions, hasLength(2));
+      expect(controller.questionnaire.value.questions, hasLength(3));
       await tester.tap(find.byTooltip('Undo'));
       await tester.pumpAndSettle();
-      expect(controller.questionnaire.value.questions, hasLength(3));
+      expect(controller.questionnaire.value.questions, hasLength(4));
       expect(tester.takeException(), isNull);
     },
   );
@@ -74,7 +82,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final controller = EditorController();
-      controller.addQuestion(QuestionType.carousel);
+      controller.addQuestion(QuestionType.carouselSingleSelect);
       await tester.pumpWidget(
         App(controller: controller, draftStore: MemoryDraftStore()),
       );

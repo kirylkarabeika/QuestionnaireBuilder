@@ -176,7 +176,8 @@ class _EditorScreenState extends State<EditorScreen> {
     QuestionType.multiSelect => Icons.checklist,
     QuestionType.textInput => Icons.notes,
     QuestionType.prominentSingleSelect => Icons.image_outlined,
-    QuestionType.carousel => Icons.view_carousel_outlined,
+    QuestionType.carouselSingleSelect ||
+    QuestionType.carouselMultiSelect => Icons.view_carousel_outlined,
     QuestionType.starRating => Icons.star_border,
   };
 

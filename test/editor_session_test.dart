@@ -25,7 +25,7 @@ void main() {
   test('restores a draft and starts with a clean undo history', () async {
     final original = EditorController()
       ..setTitle('Recovered survey')
-      ..addQuestion(QuestionType.carousel);
+      ..addQuestion(QuestionType.carouselSingleSelect);
     final store = MemoryDraftStore(original.exportJsonPretty());
     original.dispose();
     final session = EditorSession(store: store);
@@ -106,7 +106,7 @@ void main() {
     () {
       final controller = EditorController();
       addTearDown(controller.dispose);
-      controller.addQuestion(QuestionType.carousel);
+      controller.addQuestion(QuestionType.carouselSingleSelect);
       final question = controller.questionnaire.value.questions.single;
       controller.updateQuestion(
         question.id,
