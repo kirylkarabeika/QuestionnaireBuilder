@@ -26,7 +26,8 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
   bool complete = false;
   final answers = <String, Set<String>>{};
   final written = <String, String>{};
-  final ratings = <String, int>{};
+  final ratings = <String, Map<String, int>>{};
+  static const ratingStars = 5;
   bool get hasWelcome => widget.questionnaire.preScreen != null;
 
   @override
@@ -46,17 +47,13 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
       written.removeWhere((key, _) => !ids.contains(key));
       ratings.removeWhere((key, _) => !ids.contains(key));
       for (final q in widget.questionnaire.questions) {
-        final valid = q.type.isCarousel
-            ? q.items.map((i) => i.id).toSet()
-            : q.options.map((o) => o.id).toSet();
+        final valid = q.options.map((o) => o.id).toSet();
         answers[q.id]?.removeWhere((id) => !valid.contains(id));
         final multiple = q.type.allowsMultipleAnswers;
         if (!multiple && (answers[q.id]?.length ?? 0) > 1) {
           answers[q.id] = {answers[q.id]!.first};
         }
-        if ((ratings[q.id] ?? 0) > (q.starRating?.starCount ?? 5)) {
-          ratings.remove(q.id);
-        }
+        ratings[q.id]?.removeWhere((id, _) => !valid.contains(id));
       }
       if (step > widget.questionnaire.questions.length) step = 0;
     }
@@ -74,7 +71,9 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
 
   bool answered(Question q) => switch (q.type) {
     QuestionType.textInput => written[q.id]?.trim().isNotEmpty ?? false,
-    QuestionType.starRating => (ratings[q.id] ?? 0) > 0,
+    QuestionType.starRating =>
+      q.options.isNotEmpty &&
+          q.options.every((option) => (ratings[q.id]?[option.id] ?? 0) > 0),
     _ => answers[q.id]?.isNotEmpty ?? false,
   };
 
@@ -234,40 +233,59 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
                       onSelect: (id) => select(question, id),
                     ),
                   if (question.type == QuestionType.starRating) ...[
-                    Text(
-                      question.starRating?.title.isNotEmpty ?? false
-                          ? question.starRating!.title
-                          : 'Rating title',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 48,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemExtent: 40,
-                        itemCount: question.starRating?.starCount ?? 5,
-                        itemBuilder: (context, i) => IconButton(
-                          tooltip: 'Rate ${i + 1} stars',
-                          padding: EdgeInsets.zero,
-                          onPressed: () =>
-                              setState(() => ratings[question.id] = i + 1),
-                          icon: Icon(
-                            (ratings[question.id] ?? 0) > i
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 30,
-                          ),
+                    for (final option in question.options)
+                      Padding(
+                        key: ValueKey('preview-rating-${option.id}'),
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              option.text.isEmpty ? 'Rating text' : option.text,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            if (option.description?.isNotEmpty ?? false)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(option.description!),
+                              ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 48,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemExtent: 40,
+                                itemCount: ratingStars,
+                                itemBuilder: (context, i) => IconButton(
+                                  tooltip: 'Rate ${i + 1} stars',
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () => setState(() {
+                                    ratings.putIfAbsent(
+                                      question.id,
+                                      () => {},
+                                    )[option.id] = i + 1;
+                                  }),
+                                  icon: Icon(
+                                    (ratings[question.id]?[option.id] ?? 0) > i
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (ratings[question.id]?[option.id] != null)
+                              Text(
+                                '${ratings[question.id]![option.id]} of $ratingStars stars',
+                              ),
+                          ],
                         ),
                       ),
-                    ),
-                    if (ratings[question.id] != null)
-                      Text(
-                        '${ratings[question.id]} of ${question.starRating?.starCount ?? 5} stars',
-                      ),
-                    const SizedBox(height: 12),
-                    Text(question.starRating?.description ?? ''),
+                    if (question.options.isEmpty)
+                      const Text('Rating questions will appear here.'),
                   ],
                   if (question.type == QuestionType.textInput)
                     TextFormField(
@@ -458,7 +476,7 @@ class _CarouselPreviewState extends State<CarouselPreview> {
   @override
   void initState() {
     super.initState();
-    final focused = widget.question.items.indexWhere(
+    final focused = widget.question.options.indexWhere(
       (item) => item.id == widget.focusedItemId,
     );
     index = focused < 0 ? 0 : focused;
@@ -468,12 +486,15 @@ class _CarouselPreviewState extends State<CarouselPreview> {
   @override
   void didUpdateWidget(covariant CarouselPreview oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final focused = widget.question.items.indexWhere(
+    final focused = widget.question.options.indexWhere(
       (item) => item.id == widget.focusedItemId,
     );
     final target = focused >= 0
         ? focused
-        : index.clamp(0, (widget.question.items.length - 1).clamp(0, 1 << 30));
+        : index.clamp(
+            0,
+            (widget.question.options.length - 1).clamp(0, 1 << 30),
+          );
     if (target != index || oldWidget.focusedItemId != widget.focusedItemId) {
       index = target;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -490,7 +511,7 @@ class _CarouselPreviewState extends State<CarouselPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final items = widget.question.items;
+    final items = widget.question.options;
     if (items.isEmpty) return const Text('Carousel items will appear here.');
     return Column(
       children: [
@@ -525,15 +546,17 @@ class _CarouselPreviewState extends State<CarouselPreview> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            ContentImage(url: item.imageUrl, height: 140),
-                            const SizedBox(height: 12),
+                            if (item.imageUrl?.isNotEmpty ?? false) ...[
+                              ContentImage(url: item.imageUrl, height: 140),
+                              const SizedBox(height: 12),
+                            ],
                             Row(
                               children: [
                                 Expanded(
                                   child: Text(
-                                    item.title.isEmpty
-                                        ? 'Item title'
-                                        : item.title,
+                                    item.text.isEmpty
+                                        ? 'Answer text'
+                                        : item.text,
                                     style: Theme.of(
                                       context,
                                     ).textTheme.titleMedium,
@@ -547,8 +570,10 @@ class _CarouselPreviewState extends State<CarouselPreview> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(item.description),
+                            if (item.description?.isNotEmpty ?? false) ...[
+                              const SizedBox(height: 8),
+                              Text(item.description!),
+                            ],
                           ],
                         ),
                       ),

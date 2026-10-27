@@ -27,9 +27,7 @@ void main() {
         question.id,
         question.copyWith(
           title: 'Choose routes',
-          items: const [
-            CarouselItem(id: 'item', title: 'Mountains', imageUrl: ''),
-          ],
+          options: const [Option(id: 'item', text: '')],
         ),
       );
       await tester.pumpWidget(
@@ -46,13 +44,13 @@ void main() {
             .onPressed,
         isNull,
       );
-      await tester.tap(find.text('Add an image for item 1 in question 1.'));
+      await tester.tap(find.text('Add text for answer 1 in question 1.'));
       await tester.pumpAndSettle();
-      expect(find.text('Edit carousel item'), findsOneWidget);
-      final field = find.widgetWithText(TextField, 'Image URL');
+      expect(find.text('Edit answer choice'), findsOneWidget);
+      final field = find.widgetWithText(TextField, 'Answer text');
       expect(field, findsOneWidget);
       expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
-      await tester.enterText(field, 'https://example.com/mountains.png');
+      await tester.enterText(field, 'Mountains');
       await tester.pump();
       await tester.tap(find.text('3 · Review'));
       await tester.pumpAndSettle();
@@ -145,16 +143,16 @@ void main() {
                 title: 'Where do you like to drive?',
                 description: 'Choose all the places you enjoy.',
                 type: QuestionType.carouselMultiSelect,
-                items: [
-                  CarouselItem(
+                options: [
+                  Option(
                     id: 'mountains',
-                    title: 'Mountains',
+                    text: 'Mountains',
                     description: 'Scenic routes and winding roads.',
                     imageUrl: 'https://example.com/mountains.png',
                   ),
-                  CarouselItem(
+                  Option(
                     id: 'coast',
-                    title: 'Coast',
+                    text: 'Coast',
                     description: 'Sea views and open horizons.',
                     imageUrl: 'https://example.com/coast.png',
                   ),
@@ -166,10 +164,13 @@ void main() {
                 title: 'How was your last drive?',
                 description: 'Think about comfort throughout your journey.',
                 type: QuestionType.starRating,
-                starRating: StarRating(
-                  title: 'Overall comfort',
-                  description: 'More stars means more comfortable.',
-                ),
+                options: [
+                  Option(
+                    id: 'comfort-rating',
+                    text: 'Overall comfort',
+                    description: 'More stars means more comfortable.',
+                  ),
+                ],
               ),
             ],
           ),

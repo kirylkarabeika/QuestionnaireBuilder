@@ -61,14 +61,6 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
           ?.map((e) => Option.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <Option>[],
-  items:
-      (json['items'] as List<dynamic>?)
-          ?.map((e) => CarouselItem.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const <CarouselItem>[],
-  starRating: json['starRating'] == null
-      ? null
-      : StarRating.fromJson(json['starRating'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
@@ -80,8 +72,6 @@ Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
   'type': _$QuestionTypeEnumMap[instance.type]!,
   'isSkippable': instance.isSkippable,
   'options': instance.options,
-  'items': instance.items,
-  'starRating': instance.starRating,
 };
 
 const _$QuestionTypeEnumMap = {
@@ -109,39 +99,6 @@ Map<String, dynamic> _$OptionToJson(_Option instance) => <String, dynamic>{
   'description': instance.description,
   'imageUrl': instance.imageUrl,
 };
-
-_CarouselItem _$CarouselItemFromJson(Map<String, dynamic> json) =>
-    _CarouselItem(
-      id: json['id'] as String,
-      order: (json['order'] as num?)?.toInt() ?? 0,
-      title: json['title'] as String,
-      description: json['description'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String,
-    );
-
-Map<String, dynamic> _$CarouselItemToJson(_CarouselItem instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'order': instance.order,
-      'title': instance.title,
-      'description': instance.description,
-      'imageUrl': instance.imageUrl,
-    };
-
-_StarRating _$StarRatingFromJson(Map<String, dynamic> json) => _StarRating(
-  title: json['title'] as String,
-  starCount: json['starCount'] == null
-      ? 5
-      : _starCountFromJson(json['starCount']),
-  description: json['description'] as String,
-);
-
-Map<String, dynamic> _$StarRatingToJson(_StarRating instance) =>
-    <String, dynamic>{
-      'title': instance.title,
-      'starCount': instance.starCount,
-      'description': instance.description,
-    };
 
 _PreScreen _$PreScreenFromJson(Map<String, dynamic> json) => _PreScreen(
   title: json['title'] as String,

@@ -8,6 +8,9 @@ void main() {
     QuestionType.singleSelect,
     QuestionType.multiSelect,
     QuestionType.prominentSingleSelect,
+    QuestionType.carouselSingleSelect,
+    QuestionType.carouselMultiSelect,
+    QuestionType.starRating,
   ]) {
     test('validates only supported answer image URLs for ${type.name}', () {
       final questionnaire = Questionnaire(
@@ -31,7 +34,7 @@ void main() {
         ],
       );
       final issues = validateQuestionnaire(questionnaire);
-      if (type == QuestionType.prominentSingleSelect) {
+      if (type == QuestionType.prominentSingleSelect || type.isCarousel) {
         expect(issues, hasLength(1));
         expect(issues.single.message, contains('Use a full http or https URL'));
         expect(issues.single.location.kind, ContentKind.option);
@@ -43,33 +46,47 @@ void main() {
     });
   }
 
-  test(
-    'points missing carousel content at the exact nested item and field',
-    () {
+  for (final type in [
+    QuestionType.carouselSingleSelect,
+    QuestionType.carouselMultiSelect,
+    QuestionType.starRating,
+  ]) {
+    test('${type.name} requires option text but no description or image', () {
+      final questionnaire = Questionnaire(
+        id: 'survey',
+        title: 'Survey',
+        description: '',
+        questions: [Question(id: 'q', title: 'Question', type: type)],
+      );
+      expect(
+        validateQuestionnaire(questionnaire).single.location.field,
+        'options',
+      );
+      final question = questionnaire.questions.single.copyWith(
+        options: const [Option(id: 'answer', text: '  ')],
+      );
       final issues = validateQuestionnaire(
-        const Questionnaire(
-          id: 'survey',
-          title: 'Survey',
-          description: '',
-          questions: [
-            Question(
-              id: 'q',
-              title: 'Routes',
-              type: QuestionType.carouselSingleSelect,
-              items: [
-                CarouselItem(id: 'item', title: 'Mountains', imageUrl: ''),
-              ],
-            ),
-          ],
-        ),
+        questionnaire.copyWith(questions: [question]),
       );
       expect(issues, hasLength(1));
-      expect(issues.single.location.kind, ContentKind.carouselItem);
+      expect(issues.single.location.kind, ContentKind.option);
       expect(issues.single.location.questionId, 'q');
-      expect(issues.single.location.itemId, 'item');
-      expect(issues.single.location.field, 'image');
-    },
-  );
+      expect(issues.single.location.itemId, 'answer');
+      expect(issues.single.location.field, 'title');
+      expect(
+        validateQuestionnaire(
+          questionnaire.copyWith(
+            questions: [
+              question.copyWith(
+                options: const [Option(id: 'answer', text: 'Answer')],
+              ),
+            ],
+          ),
+        ),
+        isEmpty,
+      );
+    });
+  }
   test(
     'validates all formats while keeping optional descriptions and images optional',
     () {
@@ -84,17 +101,6 @@ void main() {
               title: 'Question',
               type: type,
               options: const [Option(id: 'answer', text: 'Choice')],
-              items: const [
-                CarouselItem(
-                  id: 'item',
-                  title: 'Item',
-                  imageUrl: 'https://example.com/item.png',
-                ),
-              ],
-              starRating: const StarRating(
-                title: 'Comfort',
-                description: 'More is better',
-              ),
             ),
         ],
       );

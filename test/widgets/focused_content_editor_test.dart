@@ -229,99 +229,106 @@ void main() {
       },
     );
   }
-  testWidgets('carousel descriptions and images live in their own editor', (
-    tester,
-  ) async {
-    controller.addQuestion(QuestionType.carouselSingleSelect);
-    await tester.pumpWidget(_Harness(controller: controller));
-    await reveal(tester, find.text('Add carousel item'));
-    await tester.tap(find.text('Add carousel item'));
-    await tester.pumpAndSettle();
-    expect(field('Question title'), findsNothing);
-    expect(find.text('Edit carousel item'), findsOneWidget);
-    await tester.enterText(field('Item title'), 'Mountains');
-    await tester.pump();
-    await tester.enterText(
-      field('Item description (optional)'),
-      'Scenic routes\nWinding roads',
-    );
-    await tester.pump();
-    await reveal(tester, find.text('Add image'));
-    await tester.tap(find.text('Add image'));
-    await tester.pump();
-    await tester.enterText(
-      field('Image URL'),
-      'https://example.com/mountains.png',
-    );
-    await tester.pump();
-    await reveal(tester, find.text('Done'));
-    await tester.tap(find.text('Done'));
-    await tester.pumpAndSettle();
-    expect(field('Item title'), findsNothing);
-    expect(find.text('Mountains'), findsOneWidget);
-    await tester.tap(find.text('Mountains'));
-    await tester.pumpAndSettle();
-    expect(
-      tester
-          .widget<TextField>(field('Item description (optional)'))
-          .controller!
-          .text,
-      'Scenic routes\nWinding roads',
-    );
-    await tester.enterText(field('Item description (optional)'), '');
-    await tester.pump();
-    expect(
-      controller.questionnaire.value.questions.single.items.single.description,
-      isEmpty,
-    );
-    await tester.tap(find.byTooltip('Delete carousel item'));
-    await tester.pumpAndSettle();
-    expect(controller.questionnaire.value.questions.single.items, isEmpty);
-    controller.undo();
-    await tester.pump();
-    expect(
-      controller.questionnaire.value.questions.single.items.single.title,
-      'Mountains',
-    );
-  });
-  testWidgets(
-    'rating details have a separate editor with star count validation',
-    (tester) async {
-      controller.addQuestion(QuestionType.starRating);
+  for (final type in [
+    QuestionType.carouselSingleSelect,
+    QuestionType.carouselMultiSelect,
+    QuestionType.starRating,
+  ]) {
+    testWidgets('${type.label} edits supported content in options', (
+      tester,
+    ) async {
+      controller.addQuestion(type);
       await tester.pumpWidget(_Harness(controller: controller));
-      expect(field('Rating title'), findsNothing);
-      await reveal(tester, find.text('Configure star rating'));
-      await tester.tap(find.text('Configure star rating'));
+      await tester.enterText(field('Question title'), 'Trip feedback');
+      await tester.pump();
+      await reveal(tester, find.text('Add answer choice'));
+      await tester.tap(find.text('Add answer choice'));
       await tester.pumpAndSettle();
       expect(field('Question title'), findsNothing);
-      await tester.enterText(field('Rating title'), 'Comfort');
+      expect(find.text('Edit answer choice'), findsOneWidget);
+      expect(
+        find.byType(ImageField),
+        type.isCarousel ? findsOneWidget : findsNothing,
+      );
+      expect(field('Number of stars'), findsNothing);
+      expect(find.byType(TextField), findsOneWidget);
+      await tester.enterText(field('Answer text'), 'Comfort');
       await tester.pump();
-      await tester.enterText(field('Number of stars'), '7');
+      await tester.tap(find.text('Add description'));
       await tester.pump();
+      expect(find.byType(TextField), findsNWidgets(2));
       await tester.enterText(
-        field('Rating description'),
-        'More stars means better',
+        field('Description (optional)'),
+        'First line\nSecond line',
       );
       await tester.pump();
-      await tester.enterText(field('Number of stars'), '0');
-      await tester.pump();
-      expect(find.text('Enter a positive whole number'), findsOneWidget);
+      if (type.isCarousel) {
+        await reveal(tester, find.text('Add image (optional)'));
+        await tester.tap(find.text('Add image (optional)'));
+        await tester.pump();
+        await tester.enterText(
+          field('Image URL'),
+          'https://example.com/carousel.png',
+        );
+        await tester.pump();
+        final option =
+            controller.questionnaire.value.questions.single.options.single;
+        expect(option.imageUrl, 'https://example.com/carousel.png');
+        expect(option.toJson()['imageUrl'], 'https://example.com/carousel.png');
+      }
+      await reveal(tester, find.text('Done'));
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+      expect(find.text('Comfort'), findsOneWidget);
+      await tester.tap(find.text('Comfort'));
+      await tester.pumpAndSettle();
       expect(
-        controller.questionnaire.value.questions.single.starRating!.starCount,
-        7,
+        tester
+            .widget<TextField>(field('Description (optional)'))
+            .controller!
+            .text,
+        'First line\nSecond line',
       );
-      await tester.enterText(field('Number of stars'), '3');
+      if (type.isCarousel) {
+        expect(find.byType(ContentImage), findsOneWidget);
+        await tester.tap(find.byTooltip('Remove image'));
+        await tester.pump();
+        expect(
+          controller
+              .questionnaire
+              .value
+              .questions
+              .single
+              .options
+              .single
+              .imageUrl,
+          isNull,
+        );
+        expect(find.text('Add image (optional)'), findsOneWidget);
+      }
+      await tester.enterText(field('Description (optional)'), '');
       await tester.pump();
       expect(
-        controller.questionnaire.value.questions.single.starRating,
-        const StarRating(
-          title: 'Comfort',
-          starCount: 3,
-          description: 'More stars means better',
-        ),
+        controller
+            .questionnaire
+            .value
+            .questions
+            .single
+            .options
+            .single
+            .description,
+        isNull,
       );
-    },
-  );
+      await tester.tap(find.byTooltip('Delete answer choice'));
+      await tester.pumpAndSettle();
+      expect(controller.questionnaire.value.questions.single.options, isEmpty);
+      controller.undo();
+      await tester.pump();
+      final question = controller.questionnaire.value.questions.single;
+      expect(question.options.single.text, 'Comfort');
+      expect(question.title, 'Trip feedback');
+    });
+  }
   testWidgets(
     'answer choices use a separate editor and preserve the question title',
     (tester) async {

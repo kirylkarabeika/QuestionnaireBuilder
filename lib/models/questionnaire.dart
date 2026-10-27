@@ -10,14 +10,6 @@ String? _dateToJson(DateTime? date) => date?.toUtc().toIso8601String();
 
 const extendedQuestionnaireCondition = 'extended_questionnaire';
 
-int _starCountFromJson(Object? value) {
-  if (value == null) return 5;
-  if (value is! int || value < 1) {
-    throw const FormatException('starCount must be a positive integer');
-  }
-  return value;
-}
-
 @freezed
 abstract class Questionnaire with _$Questionnaire {
   const factory Questionnaire({
@@ -52,8 +44,6 @@ abstract class Question with _$Question {
     required QuestionType type,
     @Default(true) bool isSkippable,
     @Default(<Option>[]) List<Option> options,
-    @Default(<CarouselItem>[]) List<CarouselItem> items,
-    StarRating? starRating,
   }) = _Question;
 
   factory Question.fromJson(Map<String, dynamic> json) =>
@@ -100,38 +90,12 @@ enum QuestionType {
   bool get supportsAnswerImages => this == prominentSingleSelect || isCarousel;
 
   bool get supportsAnswerDescriptions =>
-      this == prominentSingleSelect || isCarousel;
+      this == prominentSingleSelect || isCarousel || this == starRating;
 }
 
 extension QuestionnaireCompatibility on Questionnaire {
   bool get requiresExtendedQuestionnaire =>
       questions.any((question) => question.type.requiresExtendedQuestionnaire);
-}
-
-@freezed
-abstract class CarouselItem with _$CarouselItem {
-  const factory CarouselItem({
-    required String id,
-    @Default(0) int order,
-    required String title,
-    @Default('') String description,
-    required String imageUrl,
-  }) = _CarouselItem;
-
-  factory CarouselItem.fromJson(Map<String, dynamic> json) =>
-      _$CarouselItemFromJson(json);
-}
-
-@freezed
-abstract class StarRating with _$StarRating {
-  const factory StarRating({
-    required String title,
-    @JsonKey(fromJson: _starCountFromJson) @Default(5) int starCount,
-    required String description,
-  }) = _StarRating;
-
-  factory StarRating.fromJson(Map<String, dynamic> json) =>
-      _$StarRatingFromJson(json);
 }
 
 enum PreScreenStyle { cards, list }

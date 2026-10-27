@@ -160,9 +160,6 @@ class EditorController {
       order: questionnaire.value.questions.length,
       title: '',
       type: type,
-      starRating: type == QuestionType.starRating
-          ? const StarRating(title: '', description: '')
-          : null,
     );
 
     questionnaire.value = _applyQuestionCompatibility(
@@ -202,9 +199,6 @@ class EditorController {
             : '${original.title} (copy)',
         options: original.options
             .map((option) => option.copyWith(id: _uuid.v4()))
-            .toList(),
-        items: original.items
-            .map((item) => item.copyWith(id: _uuid.v4()))
             .toList(),
       ),
     );

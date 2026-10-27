@@ -2,16 +2,7 @@ import '../models/questionnaire.dart';
 
 enum EditorSection { setup, questions, review }
 
-enum ContentKind {
-  setup,
-  welcome,
-  question,
-  carouselItem,
-  option,
-  rating,
-  welcomeCard,
-  welcomeItem,
-}
+enum ContentKind { setup, welcome, question, option, welcomeCard, welcomeItem }
 
 class EditorLocation {
   const EditorLocation(
@@ -52,9 +43,8 @@ extension QuestionTypePresentation on QuestionType {
     QuestionType.textInput => 'Write a free-text answer.',
     QuestionType.prominentSingleSelect =>
       'Choose one answer with an image and description.',
-    QuestionType.carouselSingleSelect => 'Browse image cards and choose one.',
-    QuestionType.carouselMultiSelect =>
-      'Browse image cards and choose several.',
+    QuestionType.carouselSingleSelect => 'Browse cards and choose one.',
+    QuestionType.carouselMultiSelect => 'Browse cards and choose several.',
     QuestionType.starRating => 'Rate an experience with stars.',
   };
 }

@@ -4,7 +4,6 @@ import 'package:uuid/uuid.dart';
 import '../models/questionnaire.dart';
 import '../widgets/editor_fields.dart';
 import '../widgets/optional_datetime_field.dart';
-import '../widgets/star_rating_editor.dart';
 import 'editor_controller.dart';
 import 'editor_location.dart';
 
@@ -111,84 +110,6 @@ class FocusedContentEditor extends StatelessWidget {
     final number = questionnaire.questions.indexOf(question) + 1;
     final contextLabel =
         'Question $number · ${question.title.isEmpty ? 'Untitled question' : question.title}';
-    if (location.kind == ContentKind.rating)
-      return page(
-        context,
-        'Edit star rating',
-        [
-          StarRatingEditor(
-            rating:
-                question.starRating ??
-                const StarRating(title: '', description: ''),
-            focusField: location.field,
-            onChanged: (rating) =>
-                update(question.copyWith(starRating: rating)),
-          ),
-        ],
-        subtitle: '$contextLabel / Rating',
-        back: back,
-      );
-    if (location.kind == ContentKind.carouselItem) {
-      final item = question.items
-          .where((item) => item.id == location.itemId)
-          .firstOrNull;
-      if (item == null) return const SizedBox.shrink();
-      void updateItem(CarouselItem value) => update(
-        question.copyWith(
-          items: [
-            for (final current in question.items)
-              current.id == item.id ? value : current,
-          ],
-        ),
-      );
-      return page(
-        context,
-        'Edit carousel item',
-        [
-          ContentField(
-            label: 'Item title',
-            value: item.title,
-            autofocus: focus('title'),
-            onChanged: (text) => updateItem(item.copyWith(title: text)),
-          ),
-          ContentField(
-            label: 'Item description (optional)',
-            value: item.description,
-            lines: 3,
-            autofocus: focus('description'),
-            onChanged: (text) => updateItem(item.copyWith(description: text)),
-          ),
-          ImageField(
-            value: item.imageUrl,
-            requiredImage: true,
-            autofocus: focus('image'),
-            onChanged: (url) => updateItem(item.copyWith(imageUrl: url ?? '')),
-          ),
-        ],
-        subtitle: '$contextLabel / Item ${question.items.indexOf(item) + 1}',
-        back: back,
-        actions: [
-          IconButton(
-            tooltip: 'Delete carousel item',
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              final remaining = question.items
-                  .where((current) => current.id != item.id)
-                  .toList();
-              update(
-                question.copyWith(
-                  items: [
-                    for (var i = 0; i < remaining.length; i++)
-                      remaining[i].copyWith(order: i),
-                  ],
-                ),
-              );
-              back();
-            },
-          ),
-        ],
-      );
-    }
     if (location.kind == ContentKind.option) {
       final option = question.options
           .where((option) => option.id == location.itemId)
@@ -272,64 +193,7 @@ class FocusedContentEditor extends StatelessWidget {
           onChanged: (url) => update(question.copyWith(imageUrl: url)),
         ),
         const Divider(height: 36),
-        if (question.type.isCarousel) ...[
-          Text(
-            'Carousel items',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 12),
-          for (var i = 0; i < question.items.length; i++)
-            ContentSummary(
-              title: question.items[i].title.isEmpty
-                  ? 'Untitled item ${i + 1}'
-                  : question.items[i].title,
-              description: question.items[i].description,
-              imageUrl: question.items[i].imageUrl,
-              onTap: () => onNavigate(
-                EditorLocation(
-                  ContentKind.carouselItem,
-                  questionId: question.id,
-                  itemId: question.items[i].id,
-                ),
-              ),
-            ),
-          OutlinedButton.icon(
-            onPressed: () {
-              final item = CarouselItem(
-                id: _uuid.v4(),
-                order: question.items.length,
-                title: '',
-                imageUrl: '',
-              );
-              update(question.copyWith(items: [...question.items, item]));
-              onNavigate(
-                EditorLocation(
-                  ContentKind.carouselItem,
-                  questionId: question.id,
-                  itemId: item.id,
-                ),
-              );
-            },
-            icon: const Icon(Icons.add),
-            label: const Text('Add carousel item'),
-          ),
-        ] else if (question.type == QuestionType.starRating) ...[
-          Text(
-            'Rating details',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 12),
-          ContentSummary(
-            title: question.starRating?.title.isNotEmpty ?? false
-                ? question.starRating!.title
-                : 'Configure star rating',
-            description:
-                '${question.starRating?.starCount ?? 5} stars · ${question.starRating?.description ?? 'Add a description'}',
-            onTap: () => onNavigate(
-              EditorLocation(ContentKind.rating, questionId: question.id),
-            ),
-          ),
-        ] else if (question.type != QuestionType.textInput) ...[
+        if (question.type != QuestionType.textInput) ...[
           Text(
             'Answer choices',
             style: Theme.of(context).textTheme.titleMedium,

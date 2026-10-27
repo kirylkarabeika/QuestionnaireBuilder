@@ -70,49 +70,7 @@ List<ContentIssue> validateQuestionnaire(Questionnaire questionnaire) {
       at(ContentKind.question, 'title'),
     );
     url(question.imageUrl, label, at(ContentKind.question, 'image'));
-    if (question.type.isCarousel) {
-      if (question.items.isEmpty)
-        issues.add(
-          ContentIssue(
-            'Add a carousel item to $label.',
-            at(ContentKind.question, 'items'),
-          ),
-        );
-      for (var j = 0; j < question.items.length; j++) {
-        final item = question.items[j];
-        final name = 'item ${j + 1} in $label';
-        requiredText(
-          item.title,
-          'Add a title for $name.',
-          at(ContentKind.carouselItem, 'title', itemId: item.id),
-        );
-        url(
-          item.imageUrl,
-          name,
-          at(ContentKind.carouselItem, 'image', itemId: item.id),
-          required: true,
-        );
-      }
-    } else if (question.type == QuestionType.starRating) {
-      final rating = question.starRating;
-      requiredText(
-        rating?.title ?? '',
-        'Add a rating title for $label.',
-        at(ContentKind.rating, 'title'),
-      );
-      requiredText(
-        rating?.description ?? '',
-        'Add a rating description for $label.',
-        at(ContentKind.rating, 'description'),
-      );
-      if ((rating?.starCount ?? 0) < 1)
-        issues.add(
-          ContentIssue(
-            'Choose a positive star count for $label.',
-            at(ContentKind.rating, 'count'),
-          ),
-        );
-    } else if (question.type != QuestionType.textInput) {
+    if (question.type != QuestionType.textInput) {
       if (question.options.isEmpty)
         issues.add(
           ContentIssue(

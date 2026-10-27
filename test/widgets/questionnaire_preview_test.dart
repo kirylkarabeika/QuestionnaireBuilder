@@ -27,9 +27,9 @@ void main() {
               title: 'Routes',
               type: type,
               isSkippable: false,
-              items: const [
-                CarouselItem(id: 'a', title: 'Mountains', imageUrl: ''),
-                CarouselItem(id: 'b', title: 'Coast', imageUrl: ''),
+              options: const [
+                Option(id: 'a', text: 'Mountains', imageUrl: ''),
+                Option(id: 'b', text: 'Coast', imageUrl: ''),
               ],
             ),
           ],
@@ -52,6 +52,7 @@ void main() {
         );
         await tester.tap(find.text('Mountains'));
         await tester.pump();
+        expect(find.byType(ContentImage), findsNothing);
         await tester.tap(find.byTooltip('Next carousel item'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Coast'));
@@ -73,10 +74,75 @@ void main() {
     );
   }
 
+  testWidgets('star rating options are answered independently', (tester) async {
+    tester.view.physicalSize = const Size(500, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    const questionnaire = Questionnaire(
+      id: 'survey',
+      title: 'Survey',
+      description: '',
+      questions: [
+        Question(
+          id: 'q',
+          title: 'Rate your trip',
+          type: QuestionType.starRating,
+          isSkippable: false,
+          options: [
+            Option(id: 'comfort', text: 'Comfort'),
+            Option(
+              id: 'safety',
+              text: 'Safety',
+              description: 'How safe did you feel?',
+            ),
+          ],
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: QuestionnairePreview(
+              questionnaire: questionnaire,
+              location: EditorLocation(ContentKind.question, questionId: 'q'),
+              walkthrough: true,
+            ),
+          ),
+        ),
+      ),
+    );
+    Finder rating(String id, int value) => find.descendant(
+      of: find.byKey(ValueKey('preview-rating-$id')),
+      matching: find.byTooltip('Rate $value stars'),
+    );
+    FilledButton finish() => tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Finish'),
+    );
+    expect(find.text('Comfort'), findsOneWidget);
+    expect(find.text('How safe did you feel?'), findsOneWidget);
+    expect(finish().onPressed, isNull);
+    await tester.tap(rating('comfort', 4));
+    await tester.pump();
+    expect(finish().onPressed, isNull);
+    await tester.tap(rating('safety', 2));
+    await tester.pump();
+    expect(find.text('4 of 5 stars'), findsOneWidget);
+    expect(find.text('2 of 5 stars'), findsOneWidget);
+    expect(finish().onPressed, isNotNull);
+    await tester.tap(find.text('Finish'));
+    await tester.pumpAndSettle();
+    expect(find.text('Thank you for your feedback'), findsOneWidget);
+  });
+
   for (final type in [
     QuestionType.singleSelect,
     QuestionType.multiSelect,
     QuestionType.prominentSingleSelect,
+    QuestionType.carouselSingleSelect,
+    QuestionType.carouselMultiSelect,
+    QuestionType.starRating,
   ]) {
     testWidgets(
       'preview restricts answer images and descriptions: ${type.name}',
@@ -125,13 +191,15 @@ void main() {
         expect(find.text('Question explanation'), findsOneWidget);
         expect(
           find.text('Answer explanation'),
-          type == QuestionType.prominentSingleSelect
+          type == QuestionType.prominentSingleSelect ||
+                  type.isCarousel ||
+                  type == QuestionType.starRating
               ? findsOneWidget
               : findsNothing,
         );
         expect(
           images,
-          type == QuestionType.prominentSingleSelect
+          type == QuestionType.prominentSingleSelect || type.isCarousel
               ? [
                   'https://example.com/question.png',
                   'https://example.com/answer.png',
@@ -174,14 +242,14 @@ void main() {
             title: 'Choose routes',
             type: QuestionType.carouselMultiSelect,
             isSkippable: false,
-            items: [
-              CarouselItem(
+            options: [
+              Option(
                 id: 'm',
-                title: 'Mountains',
+                text: 'Mountains',
                 description: 'Route explanation',
                 imageUrl: '',
               ),
-              CarouselItem(id: 'c', title: 'Coast', imageUrl: ''),
+              Option(id: 'c', text: 'Coast', imageUrl: ''),
             ],
           ),
           Question(
@@ -189,10 +257,13 @@ void main() {
             title: 'Rate the trip',
             type: QuestionType.starRating,
             isSkippable: false,
-            starRating: StarRating(
-              title: 'Comfort',
-              description: 'More is better',
-            ),
+            options: [
+              Option(
+                id: 'comfort-rating',
+                text: 'Comfort',
+                description: 'More is better',
+              ),
+            ],
           ),
           Question(
             id: 'text',

@@ -97,9 +97,6 @@ class _EditorScreenState extends State<EditorScreen> {
     if (question == null) return const EditorLocation(ContentKind.question);
     if (question.id != location.questionId)
       return EditorLocation(ContentKind.question, questionId: question.id);
-    if (location.kind == ContentKind.carouselItem &&
-        !question.items.any((item) => item.id == location.itemId))
-      return EditorLocation(ContentKind.question, questionId: question.id);
     if (location.kind == ContentKind.option &&
         !question.options.any((option) => option.id == location.itemId))
       return EditorLocation(ContentKind.question, questionId: question.id);

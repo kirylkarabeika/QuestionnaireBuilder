@@ -284,84 +284,53 @@ void main() {
   // ── updateQuestion ──────────────────────────────────────────
 
   group('extended questions', () {
-    for (final type in [
-      QuestionType.carouselSingleSelect,
-      QuestionType.carouselMultiSelect,
-      QuestionType.starRating,
-    ]) {
-      test('adding ${type.name} requires the extended condition', () {
+    const types = {
+      'carousel_single_select': QuestionType.carouselSingleSelect,
+      'carousel_multi_select': QuestionType.carouselMultiSelect,
+      'star_rating': QuestionType.starRating,
+    };
+    for (final entry in types.entries) {
+      test('adding ${entry.key} requires the extended condition', () {
         controller.setShowByCondition('try_new_features');
-        controller.addQuestion(type);
-
+        controller.addQuestion(entry.value);
+        final question = controller.questionnaire.value.questions.single;
+        expect(question.type, entry.value);
+        expect(question.options, isEmpty);
+        expect(question.isSkippable, isTrue);
         expect(
           controller.questionnaire.value.showByCondition,
           extendedQuestionnaireCondition,
         );
-        final question = controller.questionnaire.value.questions.single;
-        expect(question.type, type);
-        expect(question.isSkippable, isTrue);
-        expect(question.toJson().containsKey('selectionMode'), isFalse);
-        if (type.isCarousel) {
-          expect(
-            question.toJson()['type'],
-            type == QuestionType.carouselSingleSelect
-                ? 'carousel_single_select'
-                : 'carousel_multi_select',
-          );
-          expect(question.items, isEmpty);
-        } else {
-          expect(
-            question.starRating,
-            const StarRating(title: '', starCount: 5, description: ''),
-          );
-        }
-
         controller.setShowByCondition(null);
         expect(
           controller.questionnaire.value.showByCondition,
           extendedQuestionnaireCondition,
         );
-        controller.setShowByCondition('try_new_features');
-        expect(
-          controller.questionnaire.value.showByCondition,
-          extendedQuestionnaireCondition,
-        );
-
         controller.removeQuestion(question.id);
         controller.setShowByCondition(null);
         expect(controller.questionnaire.value.showByCondition, isNull);
       });
-    }
-
-    for (final type in ['carousel_single_select', 'carousel_multi_select']) {
-      test('round-trips $type and applies its condition', () {
+      test('round-trips ${entry.key} using the shared option structure', () {
         controller.importJson(
           jsonEncode({
             'id': 'extended',
             'title': 'Survey',
             'description': '',
-            'showByCondition': 'try_new_features',
             'questions': [
               {
-                'id': 'carousel-1',
-                'title': 'Choose your favourites',
-                'description': 'Choose from these images',
+                'id': 'q',
+                'title': 'Trip feedback',
+                'description': 'Think about your latest drive',
                 'imageUrl': 'https://example.com/question.png',
-                'type': type,
+                'type': entry.key,
                 'isSkippable': false,
-                'items': [
-                  {
-                    'id': 'a',
-                    'order': 0,
-                    'title': 'First',
-                    'imageUrl': 'https://example.com/a.png',
-                  },
+                'options': [
+                  {'id': 'a', 'order': 0, 'text': 'Comfort'},
                   {
                     'id': 'b',
                     'order': 1,
-                    'title': 'Second',
-                    'description': 'Second item details\nMore information',
-                    'imageUrl': 'https://example.com/b.png',
+                    'text': 'Safety',
+                    'description': 'Details\nMore information',
                   },
                 ],
               },
@@ -370,89 +339,45 @@ void main() {
         );
         final questionnaire = controller.questionnaire.value;
         final question = questionnaire.questions.single;
-        expect(
-          question.type,
-          type == 'carousel_single_select'
-              ? QuestionType.carouselSingleSelect
-              : QuestionType.carouselMultiSelect,
-        );
-        expect(question.items.map((item) => item.title), ['First', 'Second']);
-        expect(question.items.first.description, isEmpty);
-        expect(
-          question.items.last.description,
-          'Second item details\nMore information',
-        );
+        expect(question.type, entry.value);
+        expect(question.options.map((option) => option.text), [
+          'Comfort',
+          'Safety',
+        ]);
+        expect(question.options.first.description, isNull);
+        expect(question.options.last.description, 'Details\nMore information');
         expect(question.isSkippable, isFalse);
         final exported = jsonDecode(controller.exportJsonPretty());
         expect(exported['showByCondition'], extendedQuestionnaireCondition);
-        expect(exported['questions'][0]['type'], type);
-        expect(
-          (exported['questions'][0] as Map).containsKey('selectionMode'),
-          isFalse,
-        );
-        expect(exported['questions'][0]['items'][1], {
+        final output = exported['questions'][0] as Map;
+        expect(output['type'], entry.key);
+        expect(output.containsKey('items'), isFalse);
+        expect(output.containsKey('starRating'), isFalse);
+        expect(output.containsKey('starCount'), isFalse);
+        expect(output['options'][1], {
           'id': 'b',
           'order': 1,
-          'title': 'Second',
-          'description': 'Second item details\nMore information',
-          'imageUrl': 'https://example.com/b.png',
+          'text': 'Safety',
+          'description': 'Details\nMore information',
+          'imageUrl': null,
         });
         controller.newQuestionnaire();
         controller.importJson(jsonEncode(exported));
         expect(controller.questionnaire.value, questionnaire);
       });
     }
-
-    test(
-      'round-trips separate question and rating titles and descriptions',
-      () {
-        controller.addQuestion(QuestionType.starRating);
-        final question = controller.questionnaire.value.questions.single;
-        controller.updateQuestion(
-          question.id,
-          question.copyWith(
-            title: 'How was the trip?',
-            description: 'Think about your most recent drive',
-            imageUrl: 'https://example.com/trip.png',
-            isSkippable: false,
-            starRating: const StarRating(
-              title: 'Comfort',
-              starCount: 7,
-              description: 'More stars means more comfortable',
-            ),
-          ),
-        );
-        final questionnaire = controller.questionnaire.value;
-        final exported = controller.exportJsonPretty();
-        final json = jsonDecode(exported);
-        expect(json['questions'][0]['type'], 'star_rating');
-        expect(json['questions'][0]['starRating'], {
-          'title': 'Comfort',
-          'starCount': 7,
-          'description': 'More stars means more comfortable',
-        });
-        controller.newQuestionnaire();
-        controller.importJson(exported);
-        expect(controller.questionnaire.value, questionnaire);
-      },
-    );
-
     test('updating a question type applies the extended condition', () {
       controller.addQuestion(QuestionType.textInput);
       final question = controller.questionnaire.value.questions.single;
       controller.updateQuestion(
         question.id,
-        question.copyWith(
-          type: QuestionType.starRating,
-          starRating: const StarRating(title: 'Rating', description: 'Details'),
-        ),
+        question.copyWith(type: QuestionType.starRating),
       );
       expect(
         controller.questionnaire.value.showByCondition,
         extendedQuestionnaireCondition,
       );
     });
-
     test('legacy question types keep the selected condition', () {
       controller.setShowByCondition('try_new_features');
       controller.addQuestion(QuestionType.singleSelect);
@@ -469,29 +394,6 @@ void main() {
         extendedQuestionnaireCondition,
       );
     });
-
-    test(
-      'rating star count defaults to five and rejects invalid imported counts',
-      () {
-        expect(
-          StarRating.fromJson({
-            'title': 'Rating',
-            'description': 'Details',
-          }).starCount,
-          5,
-        );
-        for (final count in [0, -1, 2.5, 'five']) {
-          expect(
-            () => StarRating.fromJson({
-              'title': 'Rating',
-              'description': 'Details',
-              'starCount': count,
-            }),
-            throwsFormatException,
-          );
-        }
-      },
-    );
   });
 
   group('updateQuestion', () {

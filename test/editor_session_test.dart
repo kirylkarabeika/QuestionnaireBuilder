@@ -112,10 +112,10 @@ void main() {
         question.id,
         question.copyWith(
           title: 'Original',
-          items: const [
-            CarouselItem(
+          options: const [
+            Option(
               id: 'a',
-              title: 'Item',
+              text: 'Item',
               description: 'Details',
               imageUrl: 'https://example.com/a.png',
             ),
@@ -126,7 +126,7 @@ void main() {
       final copyId = controller.duplicateQuestion(question.id);
       final duplicated = controller.questionnaire.value;
       expect(duplicated.questions.map((q) => q.order), [0, 1]);
-      expect(duplicated.questions.last.items.single.id, isNot('a'));
+      expect(duplicated.questions.last.options.single.id, isNot('a'));
       controller.removeQuestion(question.id);
       controller.undo();
       expect(controller.questionnaire.value, duplicated);

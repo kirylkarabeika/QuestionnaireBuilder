@@ -9,8 +9,8 @@ Move freely between **Setup**, **Questions**, and **Review**:
 - **Setup** contains the title, introduction, optional background image, and welcome
   screen. Availability, scheduling, IDs, and compatibility settings are collapsed
   into separate sections.
-- **Questions** shows a reorderable outline and one focused editor. Answer choices,
-  carousel items, rating details, and welcome content open in their own editors,
+- **Questions** shows a reorderable outline and one focused editor. Answer choices
+  and welcome content open in their own editors,
   with a breadcrumb, back button, and live preview. Questions can be duplicated
   or deleted; undo and redo restore edits and structural changes.
 - **Review** lists incomplete content. Selecting an issue opens the exact question
@@ -26,7 +26,7 @@ use this browser's local storage. Desktop drafts use the user's application data
 directory. Drafts are local to the device and are not published or synchronized.
 The header reports saving or recovery errors. **File menu → Download draft JSON**
 can export incomplete work; the normal **Export** action checks required content
-first. Exporting still produces the same questionnaire JSON schema.
+first. Exporting produces questionnaire JSON with answer content in `options`.
 
 ## Question descriptions and images
 
@@ -40,14 +40,12 @@ Every question type supports an optional `imageUrl` string. Set it using
 thumbnails with change and remove actions. Clearing the field
 saves `null`; older JSON files without `imageUrl` continue to load.
 
-Answer-level images are available only for **Image choice** answers and **Carousel**
-items. Single choice and Multiple choice answers have no image controls.
+Optional answer-level images are available for **Image choice** and **Carousel** answers.
 Question-level images remain available for every question type.
 
 Optional answer-level descriptions are available for **Image choice**
-(`prominent_single_select`) answers and **Carousel** items. Single choice and
-Multiple choice answers show their answer text without a description.
-Question-level descriptions and star rating descriptions remain available.
+(`prominent_single_select`), **Carousel**, and **Star rating** options. Single choice
+and Multiple choice answers show their answer text without a description.
 
 ## Carousel and star rating questions
 
@@ -56,17 +54,20 @@ Use **Add question**, then choose **Carousel (single choice)**,
 same question title, optional description and image URL, and skippable setting
 as the existing question types.
 
-Carousels use `type: "carousel_single_select"` or `type: "carousel_multi_select"`
-and an `items` array. The type determines whether participants choose one or
-multiple answers. Each item has a stable `id`, zero-based
-`order`, `title`, `description`, and `imageUrl`. Item descriptions support multiple
-lines and default to an empty string when omitted. Use **Add carousel
-item** to add items; deleting one renumbers the remaining items without changing
-their IDs.
+Carousels use `type: "carousel_single_select"` or `type: "carousel_multi_select"`.
+The type determines whether participants choose one or multiple answers.
+Star rating questions use `type: "star_rating"`.
 
-Star rating questions use `type: "star_rating"` and a `starRating` object with
-its own `title`, `description`, and positive integer `starCount` (default `5`).
-The rating description is separate from the optional question description.
+All three types store their content in the same `options` array used by other
+answer choices. Each option has an automatically generated `id` and zero-based
+`order`, mandatory `text`, and an optional `description`. Use **Add answer choice**
+to add an option; deleting one renumbers the remaining options without changing
+their IDs. Carousel options also support an optional `imageUrl`, with an
+**Add image (optional)** control and image preview. Images can be changed or removed.
+Star rating options contain only text and description controls.
+Descriptions support multiple lines and save as `null` when cleared or omitted.
+Star ratings have no configurable star count. The preview shows five stars for
+each rating option and requires each option to be rated.
 
 ```json
 {
@@ -83,20 +84,20 @@ The rating description is separate from the optional question description.
       "imageUrl": null,
       "type": "carousel_multi_select",
       "isSkippable": true,
-      "items": [
+      "options": [
         {
           "id": "mountains",
           "order": 0,
-          "title": "Mountains",
+          "text": "Mountains",
           "description": "Scenic routes through the mountains",
           "imageUrl": "https://example.com/mountains.png"
         },
         {
           "id": "coast",
           "order": 1,
-          "title": "Coast",
-          "description": "Relaxing drives along the coast",
-          "imageUrl": "https://example.com/coast.png"
+          "text": "Coast",
+          "description": null,
+          "imageUrl": null
         }
       ]
     },
@@ -108,11 +109,15 @@ The rating description is separate from the optional question description.
       "imageUrl": null,
       "type": "star_rating",
       "isSkippable": false,
-      "starRating": {
-        "title": "Comfort",
-        "starCount": 5,
-        "description": "More stars means more comfortable"
-      }
+      "options": [
+        {
+          "id": "comfort",
+          "order": 0,
+          "text": "Comfort",
+          "description": "More stars means more comfortable",
+          "imageUrl": null
+        }
+      ]
     }
   ]
 }
