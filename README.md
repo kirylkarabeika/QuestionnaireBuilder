@@ -134,8 +134,9 @@ condition as hidden before decoding the questions.
 ## Pre-screen styles
 
 Enable **Include a welcome screen** in Setup, open **Edit welcome screen**, and
-choose **Cards** or **List with icons** under **Welcome layout**. List items have a title and an icon URL, with a small
-leading icon preview in the editor.
+choose **Cards** or **List with icons** under **Welcome layout**. List items have a
+required title and an optional icon URL. Use **Add icon (optional)** to add an image;
+items without an icon show only their text in the editor and participant preview.
 
 ```json
 {
@@ -148,6 +149,10 @@ leading icon preview in the editor.
       {
         "title": "Have your keys ready",
         "iconURL": "https://example.com/key.png"
+      },
+      {
+        "title": "Allow a few minutes",
+        "iconURL": null
       }
     ]
   }
@@ -155,6 +160,7 @@ leading icon preview in the editor.
 ```
 
 The `style` values are `cards` and `list`. Files without `style` use `cards`.
-Icon URLs are JSON strings, using the exact key `iconURL`. Both content arrays
+Icon URLs use the exact key `iconURL` and can be omitted or `null`. Clearing an
+icon saves `null`; provided URLs must be full http or https links. Both content arrays
 are saved so switching styles preserves edits; consumers display the array
 selected by `style`.

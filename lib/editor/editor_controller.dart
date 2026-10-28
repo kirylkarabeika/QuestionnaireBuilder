@@ -295,7 +295,7 @@ class EditorController {
   void addPreScreenItem() {
     final ps = questionnaire.value.preScreen;
     if (ps == null) return;
-    const item = PreScreenItem(title: '', iconUrl: '');
+    const item = PreScreenItem(title: '');
     questionnaire.value = questionnaire.value.copyWith(
       preScreen: ps.copyWith(items: [...ps.items, item]),
     );

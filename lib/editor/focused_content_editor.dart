@@ -519,9 +519,8 @@ class FocusedContentEditor extends StatelessWidget {
           ImageField(
             label: 'Icon',
             value: item.iconUrl,
-            requiredImage: true,
             autofocus: focus('image'),
-            onChanged: (url) => update(item.copyWith(iconUrl: url ?? '')),
+            onChanged: (url) => update(item.copyWith(iconUrl: url)),
           ),
         ],
         subtitle: 'Welcome screen / Item ${index + 1}',
@@ -600,7 +599,7 @@ class FocusedContentEditor extends StatelessWidget {
               title: welcome.items[i].title.isEmpty
                   ? 'Untitled item ${i + 1}'
                   : welcome.items[i].title,
-              imageUrl: welcome.items[i].iconUrl,
+              imageUrl: optional(welcome.items[i].iconUrl ?? ''),
               onTap: () =>
                   onNavigate(EditorLocation(ContentKind.welcomeItem, index: i)),
             ),

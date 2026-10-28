@@ -153,7 +153,7 @@ Map<String, dynamic> _$PreScreenCardToJson(_PreScreenCard instance) =>
 _PreScreenItem _$PreScreenItemFromJson(Map<String, dynamic> json) =>
     _PreScreenItem(
       title: json['title'] as String,
-      iconUrl: json['iconURL'] as String,
+      iconUrl: json['iconURL'] as String?,
     );
 
 Map<String, dynamic> _$PreScreenItemToJson(_PreScreenItem instance) =>

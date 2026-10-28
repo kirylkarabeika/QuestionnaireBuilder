@@ -1474,7 +1474,7 @@ as String?,
 /// @nodoc
 mixin _$PreScreenItem {
 
- String get title;@JsonKey(name: 'iconURL') String get iconUrl;
+ String get title;@JsonKey(name: 'iconURL') String? get iconUrl;
 /// Create a copy of PreScreenItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1507,7 +1507,7 @@ abstract mixin class $PreScreenItemCopyWith<$Res>  {
   factory $PreScreenItemCopyWith(PreScreenItem value, $Res Function(PreScreenItem) _then) = _$PreScreenItemCopyWithImpl;
 @useResult
 $Res call({
- String title,@JsonKey(name: 'iconURL') String iconUrl
+ String title,@JsonKey(name: 'iconURL') String? iconUrl
 });
 
 
@@ -1524,11 +1524,11 @@ class _$PreScreenItemCopyWithImpl<$Res>
 
 /// Create a copy of PreScreenItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? iconUrl = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? iconUrl = freezed,}) {
   return _then(_self.copyWith(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,iconUrl: null == iconUrl ? _self.iconUrl : iconUrl // ignore: cast_nullable_to_non_nullable
-as String,
+as String,iconUrl: freezed == iconUrl ? _self.iconUrl : iconUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1613,7 +1613,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title, @JsonKey(name: 'iconURL')  String iconUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title, @JsonKey(name: 'iconURL')  String? iconUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PreScreenItem() when $default != null:
 return $default(_that.title,_that.iconUrl);case _:
@@ -1634,7 +1634,7 @@ return $default(_that.title,_that.iconUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title, @JsonKey(name: 'iconURL')  String iconUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title, @JsonKey(name: 'iconURL')  String? iconUrl)  $default,) {final _that = this;
 switch (_that) {
 case _PreScreenItem():
 return $default(_that.title,_that.iconUrl);case _:
@@ -1654,7 +1654,7 @@ return $default(_that.title,_that.iconUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title, @JsonKey(name: 'iconURL')  String iconUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title, @JsonKey(name: 'iconURL')  String? iconUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _PreScreenItem() when $default != null:
 return $default(_that.title,_that.iconUrl);case _:
@@ -1669,11 +1669,11 @@ return $default(_that.title,_that.iconUrl);case _:
 @JsonSerializable()
 
 class _PreScreenItem implements PreScreenItem {
-  const _PreScreenItem({required this.title, @JsonKey(name: 'iconURL') required this.iconUrl});
+  const _PreScreenItem({required this.title, @JsonKey(name: 'iconURL') this.iconUrl});
   factory _PreScreenItem.fromJson(Map<String, dynamic> json) => _$PreScreenItemFromJson(json);
 
 @override final  String title;
-@override@JsonKey(name: 'iconURL') final  String iconUrl;
+@override@JsonKey(name: 'iconURL') final  String? iconUrl;
 
 /// Create a copy of PreScreenItem
 /// with the given fields replaced by the non-null parameter values.
@@ -1708,7 +1708,7 @@ abstract mixin class _$PreScreenItemCopyWith<$Res> implements $PreScreenItemCopy
   factory _$PreScreenItemCopyWith(_PreScreenItem value, $Res Function(_PreScreenItem) _then) = __$PreScreenItemCopyWithImpl;
 @override @useResult
 $Res call({
- String title,@JsonKey(name: 'iconURL') String iconUrl
+ String title,@JsonKey(name: 'iconURL') String? iconUrl
 });
 
 
@@ -1725,11 +1725,11 @@ class __$PreScreenItemCopyWithImpl<$Res>
 
 /// Create a copy of PreScreenItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? iconUrl = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? iconUrl = freezed,}) {
   return _then(_PreScreenItem(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,iconUrl: null == iconUrl ? _self.iconUrl : iconUrl // ignore: cast_nullable_to_non_nullable
-as String,
+as String,iconUrl: freezed == iconUrl ? _self.iconUrl : iconUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

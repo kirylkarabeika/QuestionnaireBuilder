@@ -115,6 +115,43 @@ void main() {
       }
     },
   );
+  test('welcome item icons are optional and validate URLs when provided', () {
+    const questionnaire = Questionnaire(
+      id: 'survey',
+      title: 'Survey',
+      description: '',
+      questions: [
+        Question(id: 'q', title: 'Question', type: QuestionType.textInput),
+      ],
+      preScreen: PreScreen(
+        title: 'Welcome',
+        description: '',
+        style: PreScreenStyle.list,
+      ),
+    );
+    List<ContentIssue> validateItem(PreScreenItem item) =>
+        validateQuestionnaire(
+          questionnaire.copyWith(
+            preScreen: questionnaire.preScreen!.copyWith(items: [item]),
+          ),
+        );
+    for (final icon in [null, '', '  ', 'https://example.com/key.png']) {
+      expect(
+        validateItem(PreScreenItem(title: 'Bring your keys', iconUrl: icon)),
+        isEmpty,
+      );
+    }
+    final invalid = validateItem(
+      const PreScreenItem(title: 'Bring your keys', iconUrl: 'key.png'),
+    );
+    expect(invalid, hasLength(1));
+    expect(invalid.single.location.kind, ContentKind.welcomeItem);
+    expect(invalid.single.location.index, 0);
+    expect(invalid.single.location.field, 'image');
+    final missingText = validateItem(const PreScreenItem(title: '  '));
+    expect(missingText, hasLength(1));
+    expect(missingText.single.location.field, 'title');
+  });
   test(
     'validates only the selected welcome layout and preserves inactive content',
     () {

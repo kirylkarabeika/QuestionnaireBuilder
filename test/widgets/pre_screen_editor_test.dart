@@ -4,6 +4,7 @@ import 'package:labs_questionnaire_creator/editor/draft_store.dart';
 import 'package:labs_questionnaire_creator/editor/editor_controller.dart';
 import 'package:labs_questionnaire_creator/main.dart';
 import 'package:labs_questionnaire_creator/models/questionnaire.dart';
+import 'package:labs_questionnaire_creator/widgets/editor_fields.dart';
 
 void main() {
   testWidgets(
@@ -40,7 +41,12 @@ void main() {
         'Bring your keys',
       );
       await tester.pump();
-      await tester.tap(find.text('Add icon'));
+      expect(
+        controller.questionnaire.value.preScreen!.items.single.iconUrl,
+        isNull,
+      );
+      expect(find.byType(ContentImage), findsNothing);
+      await tester.tap(find.text('Add icon (optional)'));
       await tester.pump();
       await tester.enterText(
         find.widgetWithText(TextField, 'Icon URL'),
@@ -74,6 +80,22 @@ void main() {
         controller.questionnaire.value.preScreen!.cards.single.title,
         'Welcome card',
       );
+      await tester.tap(find.text('Bring your keys').first);
+      await tester.pumpAndSettle();
+      expect(
+        controller.questionnaire.value.preScreen!.items.single.iconUrl,
+        'https://example.com/key.png',
+      );
+      await tester.tap(find.byTooltip('Remove image'));
+      await tester.pumpAndSettle();
+      expect(
+        controller.questionnaire.value.preScreen!.items.single.iconUrl,
+        isNull,
+      );
+      expect(find.byType(ContentImage), findsNothing);
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ContentImage), findsNothing);
       await tester.tap(find.text('Bring your keys').first);
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Delete welcome item'));

@@ -20,16 +20,8 @@ List<ContentIssue> validateQuestionnaire(Questionnaire questionnaire) {
     if (value.trim().isEmpty) issues.add(ContentIssue(message, location));
   }
 
-  void url(
-    String? value,
-    String label,
-    EditorLocation location, {
-    bool required = false,
-  }) {
-    if (value == null || value.trim().isEmpty) {
-      if (required)
-        issues.add(ContentIssue('Add an image for $label.', location));
-    } else if (!isImageUrl(value)) {
+  void url(String? value, String label, EditorLocation location) {
+    if (value != null && value.trim().isNotEmpty && !isImageUrl(value)) {
       issues.add(
         ContentIssue('Use a full http or https URL for $label.', location),
       );
@@ -146,7 +138,6 @@ List<ContentIssue> validateQuestionnaire(Questionnaire questionnaire) {
           item.iconUrl,
           'welcome item ${i + 1}',
           EditorLocation(ContentKind.welcomeItem, index: i, field: 'image'),
-          required: true,
         );
       }
     }

@@ -681,6 +681,43 @@ void main() {
   // ── exportJsonPretty ────────────────────────────────────────
 
   group('list pre-screen', () {
+    test('round-trips items with omitted, null, empty, or populated icons', () {
+      for (final icon in <Map<String, dynamic>>[
+        {},
+        {'iconURL': null},
+        {'iconURL': ''},
+        {'iconURL': 'https://example.com/key.png'},
+      ]) {
+        controller.importJson(
+          jsonEncode({
+            'id': 'survey',
+            'title': 'Survey',
+            'description': '',
+            'preScreen': {
+              'title': 'Welcome',
+              'description': '',
+              'style': 'list',
+              'items': [
+                {'title': 'Bring your keys', ...icon},
+              ],
+            },
+          }),
+        );
+        expect(
+          controller.questionnaire.value.preScreen!.items.single.iconUrl,
+          icon['iconURL'],
+        );
+        final exported = jsonDecode(controller.exportJsonPretty());
+        expect(exported['preScreen']['items'], [
+          {'title': 'Bring your keys', 'iconURL': icon['iconURL']},
+        ]);
+        controller.importJson(jsonEncode(exported));
+        expect(
+          controller.questionnaire.value.preScreen!.items.single.iconUrl,
+          icon['iconURL'],
+        );
+      }
+    });
     test('imports and exports items with the exact iconURL key', () {
       controller.importJson(
         jsonEncode({

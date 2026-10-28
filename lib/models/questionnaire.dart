@@ -132,7 +132,7 @@ abstract class PreScreenCard with _$PreScreenCard {
 abstract class PreScreenItem with _$PreScreenItem {
   const factory PreScreenItem({
     required String title,
-    @JsonKey(name: 'iconURL') required String iconUrl,
+    @JsonKey(name: 'iconURL') String? iconUrl,
   }) = _PreScreenItem;
 
   factory PreScreenItem.fromJson(Map<String, dynamic> json) =>

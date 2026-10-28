@@ -411,8 +411,10 @@ class _QuestionnairePreviewState extends State<QuestionnairePreview> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ContentImage(url: item.iconUrl, size: 32),
-              const SizedBox(width: 12),
+              if (item.iconUrl?.trim().isNotEmpty ?? false) ...[
+                ContentImage(url: item.iconUrl, size: 32),
+                const SizedBox(width: 12),
+              ],
               Expanded(
                 child: Text(item.title.isEmpty ? 'Item text' : item.title),
               ),
